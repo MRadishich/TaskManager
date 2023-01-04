@@ -9,7 +9,7 @@ public class Epic extends Task {
     private final HashMap<Integer, SubTask> subTasks;
 
     public Epic(int id, String name, String description) {
-        super(id, name, description);
+        super(id, name, description, Status.NEW);
         subTasks = new HashMap<>();
     }
 
@@ -31,29 +31,23 @@ public class Epic extends Task {
     }
 
     private boolean areAllSubTasksCompleted() {
-        boolean areCompleted = true;
-
         for (SubTask subTask : subTasks.values()) {
             if (subTask.getStatus() != Status.DONE) {
-                areCompleted = false;
-                break;
+                return false;
             }
         }
 
-        return areCompleted;
+        return true;
     }
 
     private boolean areAllSubTaskNew() {
-        boolean areNew = true;
-
         for (SubTask subTask : subTasks.values()) {
             if (subTask.getStatus() != Status.NEW) {
-                areNew = false;
-                break;
+                return false;
             }
         }
 
-        return areNew;
+        return true;
     }
 
     public List<SubTask> getSubTasks() {
@@ -85,7 +79,7 @@ public class Epic extends Task {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
         return Objects.equals(subTasks, epic.subTasks);

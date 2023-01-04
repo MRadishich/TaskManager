@@ -1,4 +1,4 @@
-package main.java.Exceptions;
+package main.java.exceptions;
 
 public class TaskNotFoundException extends IllegalArgumentException {
     public TaskNotFoundException(int id) {

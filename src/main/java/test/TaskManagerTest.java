@@ -1,10 +1,10 @@
 package main.java.test;
 
-import main.java.Exceptions.EpicNotFoundException;
-import main.java.Exceptions.TaskNotFoundException;
+import main.java.exceptions.EpicNotFoundException;
+import main.java.exceptions.TaskNotFoundException;
 import main.java.manager.Manager;
 import main.java.tasks.Epic;
-import main.java.tasks.SingleTask;
+import main.java.tasks.Task;
 import main.java.tasks.Status;
 import main.java.tasks.SubTask;
 
@@ -45,15 +45,15 @@ public class TaskManagerTest {
 
         System.out.println("\tSingleTask №1 до изменений: " + manager.getTaskById(0));
 
-        SingleTask firstSingleTask = new SingleTask(0, "SingleTask №1", "Updated first single task", Status.DONE);
-        manager.updateTask(firstSingleTask);
+        Task firstTask = new Task(0, "SingleTask №1", "Updated first single task", Status.DONE);
+        manager.updateTask(firstTask);
 
         System.out.println("\tSingleTask №1 после изменений: " + manager.getTaskById(0));
 
         System.out.println("\tSingleTask №2 до изменений: " + manager.getTaskById(1));
 
-        SingleTask secondSingleTask = new SingleTask(1, "SingleTask №2", "Updated first single task", Status.IN_PROGRESS);
-        manager.updateTask(secondSingleTask);
+        Task secondTask = new Task(1, "SingleTask №2", "Updated first single task", Status.IN_PROGRESS);
+        manager.updateTask(secondTask);
 
         System.out.println("\tSingleTask №2 после изменений: " + manager.getTaskById(1));
 
@@ -157,13 +157,13 @@ public class TaskManagerTest {
         System.out.println("\nПроверяем корректность работы переопределенного equals");
 
         manager.createNewSingleTask("TestEquals", "testing method equals");
-        SingleTask singleTask = new SingleTask(8, "TestEquals", "testing method equals", Status.NEW);
+        Task task = new Task(8, "TestEquals", "testing method equals", Status.NEW);
 
         System.out.println("Создана первая задача: " + manager.getTaskById(8));
-        System.out.println("Создана вторая задача: " + singleTask);
-        System.out.println("Задачи равны: " + manager.getTaskById(8).equals(singleTask));
+        System.out.println("Создана вторая задача: " + task);
+        System.out.println("Задачи равны: " + manager.getTaskById(8).equals(task));
         System.out.println("hashCode первой задачи: " + manager.getTaskById(8).hashCode());
-        System.out.println("hashCode второй задачи: " + singleTask.hashCode());
+        System.out.println("hashCode второй задачи: " + task.hashCode());
 
         manager.createNewEpic("TestEquals", "testing method equals");
         manager.createNewSubTask("TestEquals", "testing method equals", 9);

@@ -1,8 +1,8 @@
 package main.java.manager;
 
+import main.java.exceptions.EpicNotFoundException;
+import main.java.exceptions.TaskNotFoundException;
 import main.java.tasks.*;
-import main.java.Exceptions.EpicNotFoundException;
-import main.java.Exceptions.TaskNotFoundException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,17 +18,16 @@ public class Manager {
         this.allTasks = new HashMap<>();
     }
 
-    public SingleTask createNewSingleTask(String name, String description) {
-        SingleTask singleTask = new SingleTask(
+    public Task createNewSingleTask(String name, String description) {
+        Task task = new Task(
                 taskIdGeneration.getNextFreeId(),
                 name,
-                description,
-                Status.NEW
+                description
         );
 
-        saveTask(singleTask);
+        saveTask(task);
 
-        return singleTask;
+        return task;
     }
 
     private void saveTask(Task task) {
@@ -174,7 +173,7 @@ public class Manager {
 
     private void changeTypeSubTasks(Epic epic) {
         for (SubTask subTask : epic.getSubTasks()) {
-            allTasks.put(subTask.getId(), new SingleTask(
+            allTasks.put(subTask.getId(), new Task(
                     subTask.getId(),
                     subTask.getName(),
                     subTask.getDescription(),

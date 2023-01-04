@@ -1,4 +1,4 @@
-package main.java.Exceptions;
+package main.java.exceptions;
 
 public class EpicNotFoundException extends IllegalArgumentException {
     public EpicNotFoundException(int id) {
