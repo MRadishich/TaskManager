@@ -2,7 +2,8 @@ package main.java.test;
 
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
-import main.java.manager.Manager;
+import main.java.manager.InMemoryTaskManager;
+import main.java.manager.TaskManager;
 import main.java.tasks.Epic;
 import main.java.tasks.Task;
 import main.java.tasks.Status;
@@ -14,7 +15,7 @@ public class TaskManagerTest {
     }
 
     public static void runTest() {
-        Manager manager = new Manager();
+        TaskManager manager = new InMemoryTaskManager();
 
         //Создаем 2 отдельные задачи
         manager.createNewSingleTask("SingleTask №1", "First single task");
@@ -187,8 +188,16 @@ public class TaskManagerTest {
 
         System.out.println("Список оставшихся задача: " + manager.getAllTasks());
 
+        for (int i = 0; i < 10; i++) {
+            manager.getTaskById(9);
+        }
+
+        manager.getTaskById(10);
+
         manager.removeAllTasks();
 
         System.out.println("Список задач после удаления: " + manager.getAllTasks());
+
+        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
     }
 }

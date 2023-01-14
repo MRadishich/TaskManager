@@ -9,15 +9,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Manager {
-    private final TaskIdGeneration taskIdGeneration;
+public class InMemoryTaskManager implements TaskManager {
+    private final InMemoryTaskManager.TaskIdGeneration taskIdGeneration;
+    private final InMemoryHistoryTaskManager viewedTasks = new InMemoryHistoryTaskManager();
     private final HashMap<Integer, Task> allTasks;
 
-    public Manager() {
-        this.taskIdGeneration = new TaskIdGeneration();
+
+    public InMemoryTaskManager() {
+        this.taskIdGeneration = new InMemoryTaskManager.TaskIdGeneration();
         this.allTasks = new HashMap<>();
     }
 
+    @Override
     public Task createNewSingleTask(String name, String description) {
         Task task = new Task(
                 taskIdGeneration.getNextFreeId(),
@@ -34,6 +37,7 @@ public class Manager {
         allTasks.put(task.getId(), task);
     }
 
+    @Override
     public Epic createNewEpic(String name, String description) {
         Epic epic = new Epic(
                 taskIdGeneration.getNextFreeId(),
@@ -46,6 +50,7 @@ public class Manager {
         return epic;
     }
 
+    @Override
     public SubTask createNewSubTask(String name, String description, int epicId) throws EpicNotFoundException {
         if (!allTasks.containsKey(epicId) || !(allTasks.get(epicId) instanceof Epic)) {
             throw new EpicNotFoundException(epicId);
@@ -71,6 +76,7 @@ public class Manager {
         epic.addSubTask(subTask.getId(), subTask);
     }
 
+    @Override
     public Task updateTask(Task task) throws TaskNotFoundException {
         int taskId = task.getId();
 
@@ -104,18 +110,22 @@ public class Manager {
         oldEpic.removeSubTask(oldSubTask.getId());
     }
 
+    @Override
     public List<Task> getAllTasks() {
         return new ArrayList<>(allTasks.values());
     }
 
+    @Override
     public Task getTaskById(int id) throws TaskNotFoundException {
         if (!allTasks.containsKey(id)) {
             throw new TaskNotFoundException(id);
         } else {
+            viewedTasks.add(allTasks.get(id));
             return allTasks.get(id);
         }
     }
 
+    @Override
     public List<Task> getAllSingleTasks() {
         return allTasks.values()
                 .stream()
@@ -124,6 +134,7 @@ public class Manager {
 
     }
 
+    @Override
     public List<Task> getAllEpic() {
         return allTasks.values()
                 .stream()
@@ -131,6 +142,7 @@ public class Manager {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    @Override
     public List<Task> getAllSubTasks() {
         return allTasks.values()
                 .stream()
@@ -138,6 +150,7 @@ public class Manager {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    @Override
     public List<SubTask> getAllSubTasksByEpicId(int id) throws EpicNotFoundException {
         if (!(allTasks.get(id) instanceof Epic)) {
             throw new EpicNotFoundException(id);
@@ -148,10 +161,17 @@ public class Manager {
         return epic.getSubTasks();
     }
 
+    @Override
+    public List<Task> getHistory() {
+        return viewedTasks.getHistory();
+    }
+
+    @Override
     public void removeAllTasks() {
         allTasks.clear();
     }
 
+    @Override
     public void removeTaskById(int id) throws TaskNotFoundException {
         if (!allTasks.containsKey(id)) {
             throw new TaskNotFoundException(id);
