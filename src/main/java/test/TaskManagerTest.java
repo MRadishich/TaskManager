@@ -75,14 +75,14 @@ public class TaskManagerTest {
         //несуществующему эпику выбрасывается исключение
         try {
             System.out.println("\nПолучаем подзадачи по id = 1 (проверяем, что выбрасывается исключение)");
-            System.out.println(manager.getAllSubTasksByEpicId(1));
+            System.out.println(manager.getAllSubTasksByEpicId(10));
         } catch (EpicNotFoundException e) {
             System.out.println(e.getMessage());
         }
 
         try {
             System.out.println("\nСоздаем подзадачу с epicId = 4 (проверяем, что выбрасывается исключение)");
-            manager.createNewSubTask("SubTask", "SubTask", 4);
+            manager.createNewSubTask("SubTask", "SubTask", 1);
         } catch (EpicNotFoundException e) {
             System.out.println(e.getMessage());
         }

@@ -1,6 +1,6 @@
 package main.java.manager;
 
-import main.java.repository.TaskRepository;
+import main.java.repository.InMemoryTaskRepository;
 import main.java.tasks.Task;
 
 import java.util.ArrayList;
@@ -9,10 +9,10 @@ import java.util.List;
 
 public class InMemoryHistoryTaskManager implements HistoryManager {
     public static final int NUMBER_OF_RECENTLY_VIEWED_TASKS = 10;
-    private final TaskRepository taskRepository;
+    private final InMemoryTaskRepository taskRepository;
     private final LinkedList<Integer> viewedTasks;
 
-    public InMemoryHistoryTaskManager(TaskRepository taskRepository) {
+    public InMemoryHistoryTaskManager(InMemoryTaskRepository taskRepository) {
         this.taskRepository = taskRepository;
         this.viewedTasks = new LinkedList<>();
     }
