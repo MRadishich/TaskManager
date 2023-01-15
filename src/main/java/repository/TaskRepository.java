@@ -36,8 +36,8 @@ public class TaskRepository {
         }
     }
 
-    public HashMap<Integer, Task> getAllTasks() {
-        return allTasks;
+    public List<Task> getAllTasks() {
+        return new ArrayList<>(allTasks.values());
     }
 
     public List<Task> getAllSingleTasks() {

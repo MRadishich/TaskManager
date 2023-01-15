@@ -50,23 +50,27 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask createNewSubTask(String name, String description, int epicId) throws EpicNotFoundException {
-        if (!taskRepository.getAllTasks().containsKey(epicId) || !(taskRepository.getAllTasks().get(epicId) instanceof Epic)) {
+
+        try {
+            Epic epic = (Epic) taskRepository.getTaskById(epicId);
+
+            SubTask subTask = new SubTask(
+                    taskIdGeneration.getNextFreeId(),
+                    name,
+                    description,
+                    Status.NEW,
+                    epicId
+            );
+
+            taskRepository.saveTask(subTask);
+
+            taskRepository.addSubTaskInEpic(epicId, subTask);
+
+            return subTask;
+
+        } catch (TaskNotFoundException | ClassCastException e) {
             throw new EpicNotFoundException(epicId);
         }
-
-        SubTask subTask = new SubTask(
-                taskIdGeneration.getNextFreeId(),
-                name,
-                description,
-                Status.NEW,
-                epicId
-        );
-
-        taskRepository.saveTask(subTask);
-
-        taskRepository.addSubTaskInEpic(epicId, subTask);
-
-        return subTask;
     }
 
 
@@ -77,7 +81,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getAllTasks() {
-        return new ArrayList<>(taskRepository.getAllTasks().values());
+        return new ArrayList<>(taskRepository.getAllTasks());
     }
 
     @Override
