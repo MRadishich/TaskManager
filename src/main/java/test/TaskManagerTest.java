@@ -2,12 +2,12 @@ package main.java.test;
 
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
-import main.java.manager.InMemoryTaskManager;
+import main.java.manager.Managers;
 import main.java.manager.TaskManager;
 import main.java.tasks.Epic;
-import main.java.tasks.Task;
 import main.java.tasks.Status;
 import main.java.tasks.SubTask;
+import main.java.tasks.Task;
 
 public class TaskManagerTest {
     public static void main(String[] args) {
@@ -15,7 +15,7 @@ public class TaskManagerTest {
     }
 
     public static void runTest() {
-        TaskManager manager = new InMemoryTaskManager();
+        TaskManager manager = Managers.getDefaultTaskManager();
 
         //Создаем 2 отдельные задачи
         manager.createNewSingleTask("SingleTask №1", "First single task");

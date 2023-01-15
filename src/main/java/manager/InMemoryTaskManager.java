@@ -3,6 +3,7 @@ package main.java.manager;
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
 import main.java.repository.InMemoryTaskRepository;
+import main.java.repository.TaskRepository;
 import main.java.tasks.*;
 
 import java.util.ArrayList;
@@ -10,14 +11,18 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private final TaskIdGeneration taskIdGeneration;
-    private final InMemoryHistoryTaskManager viewedTasks;
-    private final InMemoryTaskRepository taskRepository;
+    private final HistoryManager viewedTasks;
+    private final TaskRepository taskRepository;
 
 
-    public InMemoryTaskManager() {
-        this.taskIdGeneration = new TaskIdGeneration();
-        this.taskRepository = new InMemoryTaskRepository();
-        this.viewedTasks = new InMemoryHistoryTaskManager(taskRepository);
+    public InMemoryTaskManager(
+            TaskIdGeneration taskIdGeneration,
+            TaskRepository taskRepository,
+            HistoryManager historyManager)
+    {
+        this.taskIdGeneration = taskIdGeneration;
+        this.taskRepository = taskRepository;
+        this.viewedTasks = historyManager;
 
     }
 
