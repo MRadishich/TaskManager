@@ -6,9 +6,7 @@ import main.java.repository.TaskRepository;
 import main.java.tasks.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     private final TaskIdGeneration taskIdGeneration;
