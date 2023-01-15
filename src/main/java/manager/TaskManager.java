@@ -35,6 +35,4 @@ public interface TaskManager {
     void removeAllTasks();
 
     void removeTaskById(int id) throws TaskNotFoundException;
-
-
 }

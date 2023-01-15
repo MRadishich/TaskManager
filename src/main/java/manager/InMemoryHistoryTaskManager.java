@@ -1,18 +1,26 @@
 package main.java.manager;
 
+import main.java.repository.TaskRepository;
 import main.java.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryHistoryTaskManager implements HistoryManager {
     public static final int NUMBER_OF_RECENTLY_VIEWED_TASKS = 10;
-    private final LinkedList<Task> viewedTasks = new LinkedList<>();
+    private final TaskRepository taskRepository;
+    private final LinkedList<Integer> viewedTasks;
+
+    public InMemoryHistoryTaskManager(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+        this.viewedTasks = new LinkedList<>();
+    }
 
 
     @Override
-    public void add(Task task) {
-        viewedTasks.add(task);
+    public void add(Integer id) {
+        viewedTasks.add(id);
 
         if (viewedTasks.size() > NUMBER_OF_RECENTLY_VIEWED_TASKS) {
             viewedTasks.removeFirst();
@@ -21,6 +29,10 @@ public class InMemoryHistoryTaskManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        return viewedTasks;
+        List<Task> recentlyViewedTask = new ArrayList<>(viewedTasks.size());
+        for (Integer id : viewedTasks) {
+            recentlyViewedTask.add(taskRepository.getTaskById(id));
+        }
+        return recentlyViewedTask;
     }
 }

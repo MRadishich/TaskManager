@@ -183,10 +183,8 @@ public class TaskManagerTest {
         System.out.println("hashCode первой подзадачи: " + manager.getTaskById(10).hashCode());
         System.out.println("hashCode второй подзадачи: " + subTask.hashCode());
 
-        //Удаляем все оставшиеся задачи
-        System.out.println("\nУдаляем все оставшиеся задачи");
-
-        System.out.println("Список оставшихся задача: " + manager.getAllTasks());
+        //Проверяем работу отражения истории просмотра задач
+        System.out.println("\nПроверяем работу отражения истории просмотра задач");
 
         for (int i = 0; i < 10; i++) {
             manager.getTaskById(9);
@@ -194,10 +192,17 @@ public class TaskManagerTest {
 
         manager.getTaskById(10);
 
+        manager.updateTask(new Epic(9, "Updated Epic", "testing get history method"));
+
+        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
+
+        //Удаляем все оставшиеся задачи
+        System.out.println("\nУдаляем все оставшиеся задачи");
+
+        System.out.println("Список оставшихся задача: " + manager.getAllTasks());
+
         manager.removeAllTasks();
 
         System.out.println("Список задач после удаления: " + manager.getAllTasks());
-
-        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
     }
 }
