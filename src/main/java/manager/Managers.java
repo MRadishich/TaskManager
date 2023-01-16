@@ -1,6 +1,7 @@
 package main.java.manager;
 
 import main.java.repository.InMemoryTaskRepository;
+import main.java.repository.TaskRepository;
 import main.java.tasks.TaskIdGeneration;
 
 public class Managers {
@@ -43,6 +44,14 @@ public class Managers {
         }
 
         return inMemoryTaskManager;
+    }
+
+    public static TaskRepository getDefaultTaskRepository() {
+        return getInMemoryTaskRepository();
+    }
+
+    public static HistoryManager getDefaultHistoryManager() {
+        return getInMemoryHistoryTaskManager();
     }
 
     public static TaskManager getDefaultTaskManager() {

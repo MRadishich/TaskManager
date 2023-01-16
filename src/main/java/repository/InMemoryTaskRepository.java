@@ -124,7 +124,7 @@ public class InMemoryTaskRepository implements TaskRepository {
             throw new TaskNotFoundException(id);
         } else {
             if (allTasks.get(id) instanceof SubTask) {
-                removeSubTaskFromEpic(id);
+                removeSubTaskInEpic(id);
             } else if (allTasks.get(id) instanceof Epic) {
                 changeTypeSubTasks((Epic) allTasks.get(id));
             }
@@ -132,7 +132,7 @@ public class InMemoryTaskRepository implements TaskRepository {
         }
     }
 
-    private void removeSubTaskFromEpic(int id) {
+    private void removeSubTaskInEpic(int id) {
         SubTask subTask = (SubTask) allTasks.get(id);
         Epic epic = (Epic) allTasks.get(subTask.getEpicId());
         epic.removeSubTask(id);

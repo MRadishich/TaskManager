@@ -2,7 +2,6 @@ package main.java.manager;
 
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
-import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
 import main.java.tasks.*;
 
@@ -55,7 +54,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask createNewSubTask(String name, String description, int epicId) throws EpicNotFoundException {
-
         try {
             Epic epic = (Epic) taskRepository.getTaskById(epicId);
 
