@@ -13,7 +13,6 @@ public class InMemoryTaskManager implements TaskManager {
     private final HistoryManager viewedTasks;
     private final TaskRepository taskRepository;
 
-
     public InMemoryTaskManager(
             TaskIdGeneration taskIdGeneration,
             TaskRepository taskRepository,
@@ -37,7 +36,6 @@ public class InMemoryTaskManager implements TaskManager {
 
         return task;
     }
-
 
     @Override
     public Epic createNewEpic(String name, String description) {
@@ -76,7 +74,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-
     @Override
     public Task updateTask(Task task) throws TaskNotFoundException {
         return taskRepository.updateTask(task);
@@ -90,7 +87,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) throws TaskNotFoundException {
         Task task = taskRepository.getTaskById(id);
-        viewedTasks.add(id);
+        viewedTasks.add(task);
         return task;
     }
 

@@ -5,20 +5,11 @@ import main.java.repository.TaskRepository;
 import main.java.tasks.TaskIdGeneration;
 
 public class Managers {
-    private static TaskIdGeneration taskIdGeneration;
     private static InMemoryTaskRepository inMemoryTaskRepository;
     private static InMemoryHistoryTaskManager inMemoryHistoryTaskManager;
     private static InMemoryTaskManager inMemoryTaskManager;
 
-    private static TaskIdGeneration getTaskIdGeneration() {
-        if (taskIdGeneration == null) {
-            taskIdGeneration = new TaskIdGeneration();
-        }
-
-        return taskIdGeneration;
-    }
-
-    private static InMemoryTaskRepository getInMemoryTaskRepository() {
+    public static TaskRepository getDefaultTaskRepository() {
         if (inMemoryTaskRepository == null) {
             inMemoryTaskRepository = new InMemoryTaskRepository();
         }
@@ -26,35 +17,23 @@ public class Managers {
         return inMemoryTaskRepository;
     }
 
-    private static InMemoryHistoryTaskManager getInMemoryHistoryTaskManager() {
+    public static HistoryManager getDefaultHistoryManager() {
         if (inMemoryHistoryTaskManager == null) {
-            inMemoryHistoryTaskManager = new InMemoryHistoryTaskManager(getInMemoryTaskRepository());
+            inMemoryHistoryTaskManager = new InMemoryHistoryTaskManager(getDefaultTaskRepository());
         }
 
         return inMemoryHistoryTaskManager;
     }
 
-    private static InMemoryTaskManager getInMemoryTaskManager() {
+    public static TaskManager getDefaultTaskManager() {
         if (inMemoryTaskManager == null) {
             inMemoryTaskManager = new InMemoryTaskManager(
-                    getTaskIdGeneration(),
-                    getInMemoryTaskRepository(),
-                    getInMemoryHistoryTaskManager()
+                    new TaskIdGeneration(),
+                    getDefaultTaskRepository(),
+                    getDefaultHistoryManager()
             );
         }
 
         return inMemoryTaskManager;
-    }
-
-    public static TaskRepository getDefaultTaskRepository() {
-        return getInMemoryTaskRepository();
-    }
-
-    public static HistoryManager getDefaultHistoryManager() {
-        return getInMemoryHistoryTaskManager();
-    }
-
-    public static TaskManager getDefaultTaskManager() {
-        return getInMemoryTaskManager();
     }
  }

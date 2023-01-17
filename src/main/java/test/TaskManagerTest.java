@@ -186,12 +186,8 @@ public class TaskManagerTest {
         //Проверяем работу отражения истории просмотра задач
         System.out.println("\nПроверяем работу отражения истории просмотра задач");
 
-        for (int i = 0; i < 10; i++) {
-            manager.getTaskById(9);
-        }
-
         manager.getTaskById(10);
-
+        manager.removeTaskById(10);
         manager.updateTask(new Epic(9, "Updated Epic", "testing get history method"));
 
         System.out.println("Последние просмотренные задачи: " + manager.getHistory());
