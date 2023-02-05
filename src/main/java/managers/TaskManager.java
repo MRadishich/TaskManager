@@ -1,4 +1,4 @@
-package main.java.manager;
+package main.java.managers;
 
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;

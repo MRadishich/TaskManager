@@ -1,4 +1,4 @@
-package main.java.manager;
+package main.java.managers;
 
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
@@ -120,10 +120,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeAllTasks() {
         taskRepository.removeAllTasks();
+        viewedTasks.clear();
     }
 
     @Override
     public void removeTaskById(int id) throws TaskNotFoundException {
         taskRepository.removeTaskById(id);
+        viewedTasks.remove(id);
     }
 }

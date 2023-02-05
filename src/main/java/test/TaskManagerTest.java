@@ -2,8 +2,8 @@ package main.java.test;
 
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
-import main.java.manager.Managers;
-import main.java.manager.TaskManager;
+import main.java.managers.Managers;
+import main.java.managers.TaskManager;
 import main.java.tasks.Epic;
 import main.java.tasks.Status;
 import main.java.tasks.SubTask;

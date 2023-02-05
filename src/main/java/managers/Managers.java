@@ -1,4 +1,4 @@
-package main.java.manager;
+package main.java.managers;
 
 import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
