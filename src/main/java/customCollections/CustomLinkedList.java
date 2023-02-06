@@ -1,4 +1,4 @@
-package main.java.customCollection;
+package main.java.customCollections;
 
 import java.util.*;
 

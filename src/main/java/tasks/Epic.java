@@ -20,7 +20,6 @@ public class Epic extends Task {
 
     @Override
     public Status getStatus() {
-
         if (subTasks == null || areAllSubTaskNew()) {
             return Status.NEW;
         } else if (areAllSubTasksCompleted()) {
@@ -30,9 +29,9 @@ public class Epic extends Task {
         }
     }
 
-    private boolean areAllSubTasksCompleted() {
+    private boolean areAllSubTaskNew() {
         for (SubTask subTask : subTasks.values()) {
-            if (subTask.getStatus() != Status.DONE) {
+            if (subTask.getStatus() != Status.NEW) {
                 return false;
             }
         }
@@ -40,9 +39,9 @@ public class Epic extends Task {
         return true;
     }
 
-    private boolean areAllSubTaskNew() {
+    private boolean areAllSubTasksCompleted() {
         for (SubTask subTask : subTasks.values()) {
-            if (subTask.getStatus() != Status.NEW) {
+            if (subTask.getStatus() != Status.DONE) {
                 return false;
             }
         }

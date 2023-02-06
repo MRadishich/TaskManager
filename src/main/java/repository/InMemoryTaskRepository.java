@@ -13,40 +13,41 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskRepository implements TaskRepository {
-    private final HashMap<Integer, Task> allTasks;
+    private final HashMap<Integer, Task> tasks;
 
     public InMemoryTaskRepository() {
-        this.allTasks = new HashMap<>();
+        this.tasks = new HashMap<>();
     }
 
     @Override
     public void saveTask(Task task) {
-        allTasks.put(task.getId(), task);
+        tasks.put(task.getId(), task);
     }
 
     @Override
     public void addSubTaskInEpic(int epicId, SubTask subTask) {
-        Epic epic = (Epic) allTasks.get(epicId);
+        Epic epic = (Epic) tasks.get(epicId);
+
         epic.addSubTask(subTask.getId(), subTask);
     }
 
     @Override
     public Task getTaskById(int id) throws TaskNotFoundException {
-        if (!allTasks.containsKey(id)) {
+        if (!tasks.containsKey(id)) {
             throw new TaskNotFoundException(id);
         } else {
-            return allTasks.get(id);
+            return tasks.get(id);
         }
     }
 
     @Override
     public List<Task> getAllTasks() {
-        return new ArrayList<>(allTasks.values());
+        return new ArrayList<>(tasks.values());
     }
 
     @Override
     public List<Task> getAllSingleTasks() {
-        return allTasks.values()
+        return tasks.values()
                 .stream()
                 .filter(task -> (task.getType() == Type.SINGLE))
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -54,7 +55,7 @@ public class InMemoryTaskRepository implements TaskRepository {
 
     @Override
     public List<Task> getAllEpic() {
-        return allTasks.values()
+        return tasks.values()
                 .stream()
                 .filter(task -> task.getType() == Type.EPIC)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -62,7 +63,7 @@ public class InMemoryTaskRepository implements TaskRepository {
 
     @Override
     public List<Task> getAllSubTasks() {
-        return allTasks.values()
+        return tasks.values()
                 .stream()
                 .filter(task -> task.getType() == Type.SUB)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -70,11 +71,11 @@ public class InMemoryTaskRepository implements TaskRepository {
 
     @Override
     public List<SubTask> getAllSubTasksByEpicId(int id) throws EpicNotFoundException {
-        if (!(allTasks.get(id) instanceof Epic)) {
+        if (!(tasks.get(id) instanceof Epic)) {
             throw new EpicNotFoundException(id);
         }
 
-        Epic epic = (Epic) allTasks.get(id);
+        Epic epic = (Epic) tasks.get(id);
 
         return epic.getSubTasks();
     }
@@ -83,19 +84,19 @@ public class InMemoryTaskRepository implements TaskRepository {
     public Task updateTask(Task task) throws TaskNotFoundException {
         int taskId = task.getId();
 
-        if (!allTasks.containsKey(taskId)) {
+        if (!tasks.containsKey(taskId)) {
             throw new TaskNotFoundException(taskId);
         } else {
-            if (allTasks.get(task.getId()) instanceof SubTask) {
-                updateListSubTasks((SubTask) allTasks.get(taskId), (SubTask) task);
+            if (tasks.get(task.getId()) instanceof SubTask) {
+                updateListSubTasks((SubTask) tasks.get(taskId), (SubTask) task);
             }
-            allTasks.put(taskId, task);
+            tasks.put(taskId, task);
             return task;
         }
     }
 
     private void updateListSubTasks(SubTask oldSubTask, SubTask newSubTask) {
-        Epic epic = (Epic) allTasks.get(newSubTask.getEpicId());
+        Epic epic = (Epic) tasks.get(newSubTask.getEpicId());
 
         if (!isEpicIdEquals(oldSubTask, newSubTask)) {
             removeOldSubTask(oldSubTask);
@@ -109,38 +110,40 @@ public class InMemoryTaskRepository implements TaskRepository {
     }
 
     private void removeOldSubTask(SubTask oldSubTask) {
-        Epic oldEpic = (Epic) allTasks.get(oldSubTask.getEpicId());
+        Epic oldEpic = (Epic) tasks.get(oldSubTask.getEpicId());
+
         oldEpic.removeSubTask(oldSubTask.getId());
     }
 
     @Override
     public void removeAllTasks() {
-        allTasks.clear();
+        tasks.clear();
     }
 
     @Override
     public void removeTaskById(int id) throws TaskNotFoundException {
-        if (!allTasks.containsKey(id)) {
+        if (!tasks.containsKey(id)) {
             throw new TaskNotFoundException(id);
         } else {
-            if (allTasks.get(id) instanceof SubTask) {
+            if (tasks.get(id) instanceof SubTask) {
                 removeSubTaskInEpic(id);
-            } else if (allTasks.get(id) instanceof Epic) {
-                changeTypeSubTasks((Epic) allTasks.get(id));
+            } else if (tasks.get(id) instanceof Epic) {
+                changeTypeSubTasks((Epic) tasks.get(id));
             }
-            allTasks.remove(id);
+            tasks.remove(id);
         }
     }
 
     private void removeSubTaskInEpic(int id) {
-        SubTask subTask = (SubTask) allTasks.get(id);
-        Epic epic = (Epic) allTasks.get(subTask.getEpicId());
+        SubTask subTask = (SubTask) tasks.get(id);
+        Epic epic = (Epic) tasks.get(subTask.getEpicId());
+
         epic.removeSubTask(id);
     }
 
     private void changeTypeSubTasks(Epic epic) {
         for (SubTask subTask : epic.getSubTasks()) {
-            allTasks.put(subTask.getId(), new Task(
+            tasks.put(subTask.getId(), new Task(
                     subTask.getId(),
                     subTask.getName(),
                     subTask.getDescription(),

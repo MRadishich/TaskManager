@@ -1,6 +1,6 @@
 package main.java.managers;
 
-import main.java.customCollection.CustomLinkedList;
+import main.java.customCollections.CustomLinkedList;
 import main.java.repository.TaskRepository;
 import main.java.tasks.Task;
 

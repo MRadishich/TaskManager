@@ -5,7 +5,6 @@ import java.util.Objects;
 public class SubTask extends Task {
     private final int epicId;
 
-
     public SubTask(int id, String name, String description, Status status, int epicId) {
         super(id, name, description, status);
         this.epicId = epicId;
