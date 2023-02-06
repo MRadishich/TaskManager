@@ -13,18 +13,27 @@ public class CustomLinkedList<E> implements Iterable<E> {
         map = new HashMap<>();
     }
 
-    public Node<E> getHead() {
+    Node<E> getHead() {
         return head;
     }
 
-    public Node<E> getTail() {
+    Node<E> getTail() {
         return tail;
     }
 
     public void add(E e) {
         remove(e);
+
         Node<E> newNode = linkLast(e);
+
         map.put(e, newNode);
+    }
+
+    public void remove(E e) {
+        if (map.containsKey(e)) {
+            removeNode(map.get(e));
+            map.remove(e);
+        }
     }
 
     private Node<E> linkLast(E e) {
@@ -38,13 +47,6 @@ public class CustomLinkedList<E> implements Iterable<E> {
         }
         size++;
         return newNode;
-    }
-
-    public void remove(E e) {
-        if (map.containsKey(e)) {
-            removeNode(map.get(e));
-            map.remove(e);
-        }
     }
 
     private void removeNode(Node<E> e) {
@@ -76,16 +78,26 @@ public class CustomLinkedList<E> implements Iterable<E> {
             x.prev = null;
             x = tail;
         }
+
         head = tail = null;
         size = 0;
     }
 
-    public List<E> getTask() {
-        List<E> list = new ArrayList<>(size);
-        for (Node<E> x = head; x != null; x = x.next) {
-            list.add(x.item);
+    @Override
+    public String toString() {
+        Iterator<E> it = iterator();
+        if (!it.hasNext())
+            return "[]";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        for (;;) {
+            E e = it.next();
+            sb.append(e == this ? "(this Collection)" : e);
+            if (!it.hasNext())
+                return sb.append(']').toString();
+            sb.append(',').append(' ');
         }
-        return list;
     }
 
     @Override
@@ -104,11 +116,11 @@ public class CustomLinkedList<E> implements Iterable<E> {
             this.next = next;
         }
 
-        public Node<E> getNext() {
+        Node<E> getNext() {
             return next;
         }
 
-        public E getItem() {
+        E getItem() {
             return item;
         }
     }
@@ -132,11 +144,5 @@ public class CustomLinkedList<E> implements Iterable<E> {
 
             return item;
         }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
     }
 }
