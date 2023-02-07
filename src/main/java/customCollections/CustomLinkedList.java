@@ -1,23 +1,25 @@
 package main.java.customCollections;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Optional;
 
 public class CustomLinkedList<E> implements Iterable<E> {
-    int size;
-    Node<E> head;
-    Node<E> tail;
+    protected int size;
+    private Node<E> head;
+    private Node<E> tail;
 
-    HashMap<E, Node<E>> map;
+    private final HashMap<E, Node<E>> map;
 
     public CustomLinkedList() {
         map = new HashMap<>();
     }
 
-    Node<E> getHead() {
+    protected Node<E> getHead() {
         return head;
     }
 
-    Node<E> getTail() {
+    protected Node<E> getTail() {
         return tail;
     }
 
@@ -30,23 +32,7 @@ public class CustomLinkedList<E> implements Iterable<E> {
     }
 
     public void remove(E e) {
-        if (map.containsKey(e)) {
-            removeNode(map.get(e));
-            map.remove(e);
-        }
-    }
-
-    private Node<E> linkLast(E e) {
-        final Node<E> t = tail;
-        final Node<E> newNode = new Node<>(t, e, null);
-        tail = newNode;
-        if (t == null) {
-            head = newNode;
-        } else {
-            t.next = newNode;
-        }
-        size++;
-        return newNode;
+        Optional.ofNullable(map.remove(e)).ifPresent(this::removeNode);
     }
 
     private void removeNode(Node<E> e) {
@@ -70,6 +56,20 @@ public class CustomLinkedList<E> implements Iterable<E> {
         size--;
     }
 
+    private Node<E> linkLast(E e) {
+        final Node<E> t = tail;
+        final Node<E> newNode = new Node<>(t, e, null);
+        tail = newNode;
+        if (t == null) {
+            head = newNode;
+        } else {
+            t.next = newNode;
+        }
+        size++;
+
+        return newNode;
+    }
+
     public void clear() {
         for (CustomLinkedList.Node<E> x = head; x != null; ) {
             CustomLinkedList.Node<E> tail = x.next;
@@ -91,13 +91,14 @@ public class CustomLinkedList<E> implements Iterable<E> {
 
         StringBuilder sb = new StringBuilder();
         sb.append('[');
-        for (;;) {
+        while (it.hasNext()) {
             E e = it.next();
             sb.append(e == this ? "(this Collection)" : e);
-            if (!it.hasNext())
-                return sb.append(']').toString();
-            sb.append(',').append(' ');
+            if (it.hasNext()) {
+                sb.append(',').append(' ');
+            }
         }
+        return sb.append(']').toString();
     }
 
     @Override
@@ -106,21 +107,21 @@ public class CustomLinkedList<E> implements Iterable<E> {
     }
 
     private static class Node<E> {
-        Node<E> next;
-        Node<E> prev;
-        E item;
+        private Node<E> next;
+        private Node<E> prev;
+        private E item;
 
-        Node(Node<E> prev, E value, Node<E> next) {
+        protected Node(Node<E> prev, E value, Node<E> next) {
             this.item = value;
             this.prev = prev;
             this.next = next;
         }
 
-        Node<E> getNext() {
+        protected Node<E> getNext() {
             return next;
         }
 
-        E getItem() {
+        protected E getItem() {
             return item;
         }
     }

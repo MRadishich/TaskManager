@@ -24,12 +24,8 @@ public class InMemoryHistoryTaskManager implements HistoryManager {
     public List<Task> getHistory() {
         List<Task> history = new ArrayList<>();
 
-        final Iterator<Integer> iterator;
-        iterator = viewedTasks.iterator();
-
-        while (iterator.hasNext()) {
-            final Integer element = iterator.next();
-            history.add(taskRepository.getTaskById(element));
+        for (Integer i : viewedTasks) {
+            history.add(taskRepository.getTaskById(i));
         }
 
         return history;
