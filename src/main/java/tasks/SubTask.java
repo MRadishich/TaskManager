@@ -44,4 +44,10 @@ public class SubTask extends Task {
                 ", Status='" + getStatus() + '\'' +
                 '}';
     }
+
+    @Override
+    public String toStringForSaveInFile() {
+        return super.toStringForSaveInFile() + ","
+                + getEpicId();
+    }
 }

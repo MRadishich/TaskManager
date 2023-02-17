@@ -4,10 +4,13 @@ import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
 import main.java.tasks.TaskIdGeneration;
 
+import java.io.File;
+
 public class Managers {
     private static InMemoryTaskRepository inMemoryTaskRepository;
     private static InMemoryHistoryTaskManager inMemoryHistoryTaskManager;
     private static InMemoryTaskManager inMemoryTaskManager;
+    private static FileBackedTasksManager fileBackedTasksManager;
 
     public static TaskRepository getDefaultTaskRepository() {
         if (inMemoryTaskRepository == null) {
@@ -35,5 +38,18 @@ public class Managers {
         }
 
         return inMemoryTaskManager;
+    }
+
+    public static TaskManager getFileBackedTasksManager() {
+        if (fileBackedTasksManager == null) {
+            fileBackedTasksManager = new FileBackedTasksManager(
+                    new TaskIdGeneration(),
+                    getDefaultTaskRepository(),
+                    getDefaultHistoryManager(),
+                    new File("taskBackup.csv")
+            );
+        }
+
+        return fileBackedTasksManager;
     }
  }

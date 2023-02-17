@@ -42,6 +42,14 @@ public class Task {
         return status;
     }
 
+    public String toStringForSaveInFile() {
+        return getId() + "," +
+                getType() + "," +
+                getName() + "," +
+                getStatus() + "," +
+                getDescription();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,7 +70,7 @@ public class Task {
                 ", Type='" + getType() + '\'' +
                 ", Name='" + getName() + '\'' +
                 ", DescriptionLength='" + getDescription().length() + '\'' +
-                ", Status='" + status + '\'' +
+                ", Status='" + getStatus() + '\'' +
                 '}';
     }
 }
