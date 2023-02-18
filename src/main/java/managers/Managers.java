@@ -40,13 +40,13 @@ public class Managers {
         return inMemoryTaskManager;
     }
 
-    public static TaskManager getFileBackedTasksManager() {
+    public static TaskManager getFileBackedTasksManager(File file) {
         if (fileBackedTasksManager == null) {
             fileBackedTasksManager = new FileBackedTasksManager(
                     new TaskIdGeneration(),
                     getDefaultTaskRepository(),
                     getDefaultHistoryManager(),
-                    new File("taskBackup.csv")
+                    file
             );
         }
 

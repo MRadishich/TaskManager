@@ -1,16 +1,16 @@
 package main.java.managers;
 
 import main.java.exceptions.EpicNotFoundException;
+import main.java.exceptions.ManagerDeleteException;
+import main.java.exceptions.ManagerSaveException;
+import main.java.exceptions.TaskNotFoundException;
 import main.java.repository.TaskRepository;
 import main.java.tasks.Epic;
 import main.java.tasks.SubTask;
 import main.java.tasks.Task;
 import main.java.tasks.TaskIdGeneration;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
@@ -22,10 +22,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void save(Task task) {
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
-            bw.write(task.toStringForSaveInFile() + "\n");
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
+            bw.write(task.toStringForSaveInFile());
+            bw.write(System.lineSeparator());
         } catch (IOException e) {
-            System.out.println("При сохранении задачи с id: " + task.getId() + "возникла ошибка");
+            throw new ManagerSaveException("Ошибка при сохранении задачи с id: " + task.getId());
         }
     }
 
@@ -48,6 +49,51 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         SubTask subTask = super.createNewSubTask(name, description, epicId);
         save(subTask);
         return subTask;
+    }
+
+    @Override
+    public Task updateTask(Task task) throws TaskNotFoundException {
+        Task t = super.updateTask(task);
+        save(task);
+        return t;
+    }
+
+    @Override
+    public void removeAllTasks() {
+        super.removeAllTasks();
+        try {
+            new FileWriter(file, false).close();
+        } catch (IOException e) {
+            throw new ManagerDeleteException("Ошибка при очистки файла: " + file.getName());
+        }
+    }
+
+    @Override
+    public void removeTaskById(int id) throws TaskNotFoundException {
+        super.removeTaskById(id);
+        delete(id);
+    }
+
+    public void delete(int id) {
+        File tempFile = new File("tempFile");
+        try (BufferedReader br = new BufferedReader(new FileReader(file));
+             BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile, false))) {
+            while (br.ready()) {
+                String line = br.readLine();
+                String[] arr = line.split(",");
+                if (Integer.parseInt(arr[0]) == id) {
+                    continue;
+                }
+                bw.write(line);
+                bw.write(System.lineSeparator());
+            }
+
+            if (!tempFile.renameTo(file)) {
+                throw new ManagerDeleteException("Ошибка при удалении задачи с id: " + id);
+            }
+        } catch (IOException e) {
+            throw new ManagerDeleteException("Ошибка при удалении задачи с id: " + id);
+        }
     }
 
 
