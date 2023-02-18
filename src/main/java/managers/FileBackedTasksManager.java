@@ -15,6 +15,7 @@ import java.io.*;
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final File file;
+    private static final String HEADER = "id,type,name,status,description,epic";
 
     public FileBackedTasksManager(TaskIdGeneration taskIdGeneration, TaskRepository taskRepository, HistoryManager historyManager, File file) {
         super(taskIdGeneration, taskRepository, historyManager);
@@ -23,6 +24,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private void save(Task task) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
+            if (file.length() == 0) {
+                bw.write(HEADER);
+                bw.write(System.lineSeparator());
+            }
             bw.write(task.toStringForSaveInFile());
             bw.write(System.lineSeparator());
         } catch (IOException e) {
@@ -74,10 +79,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         delete(id);
     }
 
-    public void delete(int id) {
+    private void delete(int id) {
         File tempFile = new File("tempFile");
         try (BufferedReader br = new BufferedReader(new FileReader(file));
              BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile, false))) {
+            bw.write(br.readLine());
+            bw.write(System.lineSeparator());
             while (br.ready()) {
                 String line = br.readLine();
                 String[] arr = line.split(",");
