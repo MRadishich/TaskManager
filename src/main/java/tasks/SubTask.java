@@ -46,8 +46,8 @@ public class SubTask extends Task {
     }
 
     @Override
-    public String toStringForSaveInFile() {
-        return super.toStringForSaveInFile() + ","
+    public String taskToString() {
+        return super.taskToString() + ","
                 + getEpicId();
     }
 }

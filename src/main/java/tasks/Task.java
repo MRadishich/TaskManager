@@ -42,7 +42,7 @@ public class Task {
         return status;
     }
 
-    public String toStringForSaveInFile() {
+    public String taskToString() {
         return getId() + "," +
                 getType() + "," +
                 getName() + "," +
