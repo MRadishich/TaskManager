@@ -16,12 +16,14 @@ public class InMemoryTaskManager implements TaskManager {
     public InMemoryTaskManager(
             TaskIdGeneration taskIdGeneration,
             TaskRepository taskRepository,
-            HistoryManager historyManager)
-    {
+            HistoryManager historyManager) {
         this.taskIdGeneration = taskIdGeneration;
         this.taskRepository = taskRepository;
         this.historyManager = historyManager;
+    }
 
+    protected TaskIdGeneration getTaskIdGeneration() {
+        return taskIdGeneration;
     }
 
     protected HistoryManager getHistoryManager() {

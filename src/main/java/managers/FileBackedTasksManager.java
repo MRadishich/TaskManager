@@ -17,6 +17,28 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
+    public SubTask createNewSubTask(String name, String description, int epicId) throws EpicNotFoundException {
+        SubTask subTask = super.createNewSubTask(name, description, epicId);
+        save();
+        return subTask;
+    }
+
+    @Override
+    public Epic createNewEpic(String name, String description) {
+        Epic epic = new Epic(
+                getTaskIdGeneration().getNextFreeId(),
+                name,
+                description
+        );
+
+        getTaskRepository().saveTask(epic);
+
+        save();
+
+        return epic;
+    }
+
+    @Override
     public Task createNewSingleTask(String name, String description) {
         Task task = super.createNewSingleTask(name, description);
         save();
@@ -43,7 +65,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 loadSubTask(Integer.parseInt(data[0]), data[2], data[4], Status.getStatus(data[3]), Integer.parseInt(data[5]));
                 break;
             case EPIC:
-                createNewEpic(Integer.parseInt(data[0]), data[2], data[4]);
+                loadEpic(Integer.parseInt(data[0]), data[2], data[4]);
                 break;
             case SINGLE:
                 loadSingleTask(Integer.parseInt(data[0]), data[2], data[4], Status.getStatus(data[3]));
@@ -88,7 +110,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public Epic createNewEpic(int id, String name, String description) {
+    private Epic loadEpic(int id, String name, String description) {
         Epic epic = new Epic(
                 id,
                 name,
@@ -102,7 +124,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return epic;
     }
 
-    public Task loadSingleTask(int id, String name, String description, Status status) {
+    private Task loadSingleTask(int id, String name, String description, Status status) {
         Task task = new Task(
                 id,
                 name,
@@ -115,13 +137,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         save();
 
         return task;
-    }
-
-    @Override
-    public SubTask createNewSubTask(String name, String description, int epicId) throws EpicNotFoundException {
-        SubTask subTask = super.createNewSubTask(name, description, epicId);
-        save();
-        return subTask;
     }
 
     @Override
