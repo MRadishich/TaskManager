@@ -1,7 +1,7 @@
 package main.java.test;
 
+import main.java.managers.FileBackedTasksManager;
 import main.java.managers.Managers;
-import main.java.managers.TaskManager;
 import main.java.tasks.Status;
 import main.java.tasks.SubTask;
 
@@ -9,41 +9,47 @@ import java.io.File;
 
 public class FileBackedTasksManagerTest {
     public static void main(String[] args) {
-        TaskManager manager = Managers.getFileBackedTasksManager(new File("taskBackup.csv"));
+        write();
+        read();
+    }
 
+    public static void write() {
+        File file = new File("taskBackup.csv");
+        FileBackedTasksManager manager = Managers.getFileBackedTasksManager(file);
         manager.removeAllTasks();
 
-        long startTime = System.currentTimeMillis();
+        manager.createNewEpic("Epic #1", "Epic for big Tasks");
+        manager.createNewEpic("Epic #2", "Epic for small Tasks");
+        manager.createNewEpic("Epic #3", "Epic for other Tasks");
+        manager.createNewSubTask("SubTask #1", "SubTask by Epic #1", 0);
+        manager.createNewSubTask("SubTask #1", "SubTask by Epic #2", 1);
+        manager.createNewSubTask("SubTask #2", "SubTask by Epic #2", 1);
+        manager.createNewSubTask("SubTask #3", "SubTask by Epic #2", 1);
+        manager.createNewSubTask("SubTask #1", "SubTask by Epic #3", 2);
+        manager.createNewSubTask("SubTask #2", "SubTask by Epic #3", 2);
 
-        for (int i = 0; i < 1000; i++) {
-            manager.createNewEpic("Epic with id: " + i, "Epic for big Tasks");
-            manager.createNewEpic("Epic with id: " + i, "Epic for small Tasks");
-            manager.createNewSubTask("SubTask with id: " + i, "SubTask by big Epic", 0);
-            manager.createNewSubTask("SubTask with id: " + i, "SubTask by small Epic", 1);
-        }
+        SubTask subTask = new SubTask(7, "SubTask #1", "SubTask by Epic #1", Status.DONE, 2);
+        manager.updateTask(subTask);
 
-        long endTime = System.currentTimeMillis();
+        manager.getTaskById(0);
+        manager.getTaskById(1);
+        manager.getTaskById(2);
+        manager.getTaskById(3);
+        manager.getTaskById(4);
 
-        System.out.println("Время затраченное на создание задач: " + (endTime - startTime));
+        manager.removeTaskById(1);
+    }
 
-        for (int i = 0; i < 4000; i += 100) {
-            manager.getTaskById(i);
-        }
+    public static void read() {
+        File file = new File("taskBackup.csv");
+        FileBackedTasksManager manager = Managers.getFileBackedTasksManager(file);
+        manager.loadFromFile();
+        System.out.println(manager.getAllTasks());
+        System.out.println(manager.getHistory());
 
-        startTime = System.currentTimeMillis();
+        SubTask subTask = new SubTask(8, "SubTask #1", "SubTask by Epic #1", Status.DONE, 2);
+        manager.updateTask(subTask);
 
-        for (int i = 0; i < 4000; i += 2) {
-            if (i % 6 == 0 && i != 0) {
-                SubTask subTask = new SubTask(i,"Updated SubTask", "Updated SubTask", Status.DONE, i - 1);
-                manager.updateTask(subTask);
-            } else {
-                manager.removeTaskById(i);
-            }
-        }
-
-        endTime = System.currentTimeMillis();
-
-        System.out.println("Время затраченное на удаление задач: " + (endTime - startTime));
-
+        System.out.println(manager.getTaskById(2).getStatus());
     }
 }

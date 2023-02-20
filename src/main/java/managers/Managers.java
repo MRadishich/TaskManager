@@ -40,7 +40,7 @@ public class Managers {
         return inMemoryTaskManager;
     }
 
-    public static TaskManager getFileBackedTasksManager(File file) {
+    public static FileBackedTasksManager getFileBackedTasksManager(File file) {
         if (fileBackedTasksManager == null) {
             fileBackedTasksManager = new FileBackedTasksManager(
                     new TaskIdGeneration(),

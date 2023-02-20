@@ -10,7 +10,7 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private final TaskIdGeneration taskIdGeneration;
-    private final HistoryManager viewedTasks;
+    private final HistoryManager historyManager;
     private final TaskRepository taskRepository;
 
     public InMemoryTaskManager(
@@ -20,8 +20,16 @@ public class InMemoryTaskManager implements TaskManager {
     {
         this.taskIdGeneration = taskIdGeneration;
         this.taskRepository = taskRepository;
-        this.viewedTasks = historyManager;
+        this.historyManager = historyManager;
 
+    }
+
+    protected HistoryManager getHistoryManager() {
+        return historyManager;
+    }
+
+    protected TaskRepository getTaskRepository() {
+        return taskRepository;
     }
 
     @Override
@@ -87,14 +95,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) throws TaskNotFoundException {
         Task task = taskRepository.getTaskById(id);
-        viewedTasks.add(task);
+        historyManager.add(task);
         return task;
     }
 
     @Override
     public List<Task> getAllSingleTasks() {
         return taskRepository.getAllSingleTasks();
-
     }
 
     @Override
@@ -114,18 +121,18 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistory() {
-        return viewedTasks.getHistory();
+        return historyManager.getHistory();
     }
 
     @Override
     public void removeAllTasks() {
         taskRepository.removeAllTasks();
-        viewedTasks.clear();
+        historyManager.clear();
     }
 
     @Override
     public void removeTaskById(int id) throws TaskNotFoundException {
         taskRepository.removeTaskById(id);
-        viewedTasks.remove(id);
+        historyManager.remove(id);
     }
 }
