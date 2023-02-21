@@ -1,4 +1,4 @@
-package main.java.customCollections;
+package main.java.customcollections;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,16 +71,8 @@ public class CustomLinkedList<E> implements Iterable<E> {
     }
 
     public void clear() {
-        for (CustomLinkedList.Node<E> x = head; x != null; ) {
-            CustomLinkedList.Node<E> tail = x.next;
-            x.item = null;
-            x.next = null;
-            x.prev = null;
-            x = tail;
-        }
-
+        map.clear();
         head = tail = null;
-        size = 0;
     }
 
     @Override
