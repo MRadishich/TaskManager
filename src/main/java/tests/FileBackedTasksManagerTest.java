@@ -1,4 +1,4 @@
-package main.java.test;
+package main.java.tests;
 
 import main.java.managers.FileBackedTasksManager;
 import main.java.managers.Managers;

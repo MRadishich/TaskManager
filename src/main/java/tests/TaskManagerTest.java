@@ -1,4 +1,4 @@
-package main.java.test;
+package main.java.tests;
 
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
