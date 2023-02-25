@@ -1,7 +1,5 @@
 package main.java.tasks;
 
-import main.java.exceptions.StatusNotFound;
-
 public enum Status {
     NEW("NEW"),
     IN_PROGRESS("IN_PROGRESS"),
@@ -19,6 +17,7 @@ public enum Status {
                 return status;
             }
         }
-        throw new StatusNotFound("Стаус " + statusToString + " не найден");
+
+        throw new IllegalArgumentException("Статус задачи \"" + statusToString + "\" не найден");
     }
 }

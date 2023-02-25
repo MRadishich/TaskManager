@@ -1,7 +1,5 @@
 package main.java.tasks;
 
-import main.java.exceptions.TypeTaskNotFound;
-
 public enum Type {
     SINGLE("SINGLE"),
     EPIC("EPIC"),
@@ -19,6 +17,7 @@ public enum Type {
                 return type;
             }
         }
-        throw new TypeTaskNotFound("Тип задачи " + typeToString + " не найден");
+
+        throw new IllegalArgumentException("Тип задачи \"" + typeToString + "\" не найден");
     }
 }

@@ -58,7 +58,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void taskFromString(String str) {
+    private void taskFromString(String str) throws IllegalArgumentException {
         String[] data = str.split(",");
         switch (Type.getType(data[1])) {
             case SUB:
@@ -85,7 +85,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return stringBuilder.toString();
     }
 
-    private SubTask loadSubTask(int id, String name, String description, Status status, int epicId) {
+    private void loadSubTask(int id, String name, String description, Status status, int epicId) {
         try {
             Epic epic = (Epic) getTaskRepository().getTaskById(epicId);
 
@@ -103,14 +103,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
             save();
 
-            return subTask;
-
         } catch (TaskNotFoundException | ClassCastException e) {
             throw new EpicNotFoundException(epicId);
         }
     }
 
-    private Epic loadEpic(int id, String name, String description) {
+    private void loadEpic(int id, String name, String description) {
         Epic epic = new Epic(
                 id,
                 name,
@@ -120,11 +118,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         getTaskRepository().saveTask(epic);
 
         save();
-
-        return epic;
     }
 
-    private Task loadSingleTask(int id, String name, String description, Status status) {
+    private void loadSingleTask(int id, String name, String description, Status status) {
         Task task = new Task(
                 id,
                 name,
@@ -135,8 +131,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         getTaskRepository().saveTask(task);
 
         save();
-
-        return task;
     }
 
     @Override
@@ -152,7 +146,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try {
             new FileWriter(file).close();
         } catch (IOException e) {
-            throw new ManagerDeleteException("Ошибка при очистке файла: " + file.getName());
+            throw new ManagerDeleteException("Ошибка при удалении задач из файла: " + file.getName());
         }
     }
 
@@ -163,7 +157,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Task getTaskById(int id) {
+    public Task getTaskById(int id) throws TaskNotFoundException {
         Task task = getTaskRepository().getTaskById(id);
         getHistoryManager().add(task);
         save();
@@ -185,7 +179,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void loadHistory(String str) {
+    private void loadHistory(String str) throws TaskNotFoundException {
         String[] el = str.split(",");
         for (String i : el) {
             getHistoryManager().add(getTaskById(Integer.parseInt(i)));
