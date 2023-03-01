@@ -5,6 +5,9 @@ import main.java.repository.TaskRepository;
 import main.java.tasks.*;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
@@ -48,89 +51,36 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private void save() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             bw.write(HEADER + System.lineSeparator());
-            for (Task task : getAllTasks()) {
-                bw.write(task.taskToString() + System.lineSeparator());
-            }
 
-            bw.write(System.lineSeparator() + historyToString());
+            bw.write(getAllTasks().stream()
+                    .map(Task::taskToString)
+                    .collect(Collectors.joining(System.lineSeparator())));
+
+            bw.write(System.lineSeparator() + System.lineSeparator() + historyToString());
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при сохранении задач");
         }
     }
 
-    private void taskFromString(String str) throws IllegalArgumentException {
-        String[] data = str.split(",");
-        switch (Type.getType(data[1])) {
+    private static Task fromString(String line) throws IllegalArgumentException {
+        String[] taskByField = line.split(",");
+        switch (Type.valueOf(taskByField[1])) {
             case SUB:
-                loadSubTask(Integer.parseInt(data[0]), data[2], data[4], Status.getStatus(data[3]), Integer.parseInt(data[5]));
-                break;
+                return new SubTask(Integer.parseInt(taskByField[0]), taskByField[2], taskByField[4], Status.valueOf(taskByField[3]), Integer.parseInt(taskByField[5]));
             case EPIC:
-                loadEpic(Integer.parseInt(data[0]), data[2], data[4]);
-                break;
+                return new Epic(Integer.parseInt(taskByField[0]), taskByField[2], taskByField[4]);
             case SINGLE:
-                loadSingleTask(Integer.parseInt(data[0]), data[2], data[4], Status.getStatus(data[3]));
-                break;
+                return new Task(Integer.parseInt(taskByField[0]), taskByField[2], taskByField[4], Status.valueOf(taskByField[3]));
         }
+
+        return null;
     }
 
     private String historyToString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Task task : getHistory()) {
-            if (stringBuilder.length() == 0) {
-                stringBuilder.append(task.getId());
-            } else {
-                stringBuilder.append(",").append(task.getId());
-            }
-        }
-        return stringBuilder.toString();
-    }
-
-    private void loadSubTask(int id, String name, String description, Status status, int epicId) {
-        try {
-            Epic epic = (Epic) getTaskRepository().getTaskById(epicId);
-
-            SubTask subTask = new SubTask(
-                    id,
-                    name,
-                    description,
-                    status,
-                    epicId
-            );
-
-            getTaskRepository().saveTask(subTask);
-
-            getTaskRepository().addSubTaskInEpic(epicId, subTask);
-
-            save();
-
-        } catch (TaskNotFoundException | ClassCastException e) {
-            throw new EpicNotFoundException(epicId);
-        }
-    }
-
-    private void loadEpic(int id, String name, String description) {
-        Epic epic = new Epic(
-                id,
-                name,
-                description
-        );
-
-        getTaskRepository().saveTask(epic);
-
-        save();
-    }
-
-    private void loadSingleTask(int id, String name, String description, Status status) {
-        Task task = new Task(
-                id,
-                name,
-                description,
-                status
-        );
-
-        getTaskRepository().saveTask(task);
-
-        save();
+        return getHistory().stream()
+                .map(Task::getId)
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
     }
 
     @Override
@@ -164,25 +114,33 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return task;
     }
 
-    public void loadFromFile() {
+    public static FileBackedTasksManager loadFromFile(File file) {
+        FileBackedTasksManager fileBackedTasksManager = Managers.getFileBackedTasksManager(file);
+
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
+
             while (!(line = br.readLine()).isBlank()) {
-                taskFromString(line);
+                Task task = fromString(line);
+                fileBackedTasksManager.getTaskRepository().saveTask(task);
             }
 
             if ((line = br.readLine()) != null) {
-                loadHistory(line);
+                historyFromString(line).forEach(
+                        i -> fileBackedTasksManager.getHistoryManager()
+                                .add(fileBackedTasksManager.getTaskById(i))
+                );
             }
         } catch (IOException e) {
             throw new ManagerLoadException("Ошибка при создании задачи из файла: " + file.getName());
         }
+
+        return fileBackedTasksManager;
     }
 
-    private void loadHistory(String str) throws TaskNotFoundException {
-        String[] el = str.split(",");
-        for (String i : el) {
-            getHistoryManager().add(getTaskById(Integer.parseInt(i)));
-        }
+    private static List<Integer> historyFromString(String line) throws TaskNotFoundException {
+        return Arrays.stream(line.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
     }
 }
