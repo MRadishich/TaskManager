@@ -70,7 +70,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 .collect(Collectors.joining(FIELD_SEPARATOR));
     }
 
-    private static Task taskFromString(String line) throws IllegalArgumentException {
+    private Task taskFromString(String line) throws IllegalArgumentException {
         String[] taskByField = line.split(FIELD_SEPARATOR);
         switch (Type.valueOf(taskByField[1])) {
             case SUB:
@@ -130,30 +130,30 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTasksManager loadFromFile(File file) {
-        FileBackedTasksManager fileBackedTasksManager = Managers.getFileBackedTasksManager(file);
+        FileBackedTasksManager manager = Managers.getFileBackedTasksManager(file);
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
 
             while (!(line = br.readLine()).isBlank()) {
-                Task task = taskFromString(line);
-                fileBackedTasksManager.getTaskRepository().saveTask(task);
+                Task task = manager.taskFromString(line);
+                manager.getTaskRepository().saveTask(task);
             }
 
             if ((line = br.readLine()) != null) {
-                historyFromString(line).forEach(
-                        i -> fileBackedTasksManager.getHistoryManager()
-                                .add(fileBackedTasksManager.getTaskById(i))
+                manager.historyFromString(line).forEach(
+                        i -> manager.getHistoryManager()
+                                .add(manager.getTaskById(i))
                 );
             }
         } catch (IOException e) {
             throw new ManagerLoadException("Ошибка при создании задачи из файла: " + file.getName());
         }
 
-        return fileBackedTasksManager;
+        return manager;
     }
 
-    private static List<Integer> historyFromString(String line) throws TaskNotFoundException {
+    private List<Integer> historyFromString(String line) throws TaskNotFoundException {
         return Arrays.stream(line.split(FIELD_SEPARATOR))
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
