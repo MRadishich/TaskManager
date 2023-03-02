@@ -13,6 +13,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final File file;
     private static final String HEADER = "id,type,name,status,description,epic";
+    private static final String FIELD_SEPARATOR = ",";
 
     public FileBackedTasksManager(TaskIdGeneration taskIdGeneration, TaskRepository taskRepository, HistoryManager historyManager, File file) {
         super(taskIdGeneration, taskRepository, historyManager);
@@ -62,25 +63,39 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private static Task fromString(String line) throws IllegalArgumentException {
-        String[] taskByField = line.split(",");
-        switch (Type.valueOf(taskByField[1])) {
-            case SUB:
-                return new SubTask(Integer.parseInt(taskByField[0]), taskByField[2], taskByField[4], Status.valueOf(taskByField[3]), Integer.parseInt(taskByField[5]));
-            case EPIC:
-                return new Epic(Integer.parseInt(taskByField[0]), taskByField[2], taskByField[4]);
-            case SINGLE:
-                return new Task(Integer.parseInt(taskByField[0]), taskByField[2], taskByField[4], Status.valueOf(taskByField[3]));
-        }
-
-        return null;
-    }
-
     private String historyToString() {
         return getHistory().stream()
                 .map(Task::getId)
                 .map(String::valueOf)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(FIELD_SEPARATOR));
+    }
+
+    private static Task taskFromString(String line) throws IllegalArgumentException {
+        String[] taskByField = line.split(FIELD_SEPARATOR);
+        switch (Type.valueOf(taskByField[1])) {
+            case SUB:
+                return new SubTask(
+                        Integer.parseInt(taskByField[0]),
+                        taskByField[2], taskByField[4],
+                        Status.valueOf(taskByField[3]),
+                        Integer.parseInt(taskByField[5])
+                );
+            case EPIC:
+                return new Epic(
+                        Integer.parseInt(taskByField[0]),
+                        taskByField[2],
+                        taskByField[4]
+                );
+            case SINGLE:
+                return new Task(
+                        Integer.parseInt(taskByField[0]),
+                        taskByField[2],
+                        taskByField[4],
+                        Status.valueOf(taskByField[3])
+                );
+        }
+
+        return null;
     }
 
     @Override
@@ -121,7 +136,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             String line = br.readLine();
 
             while (!(line = br.readLine()).isBlank()) {
-                Task task = fromString(line);
+                Task task = taskFromString(line);
                 fileBackedTasksManager.getTaskRepository().saveTask(task);
             }
 
@@ -139,7 +154,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private static List<Integer> historyFromString(String line) throws TaskNotFoundException {
-        return Arrays.stream(line.split(","))
+        return Arrays.stream(line.split(FIELD_SEPARATOR))
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
     }

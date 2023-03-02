@@ -25,13 +25,6 @@ public class InMemoryTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void addSubTaskInEpic(int epicId, SubTask subTask) {
-        Epic epic = (Epic) tasks.get(epicId);
-
-        epic.addSubTask(subTask.getId(), subTask);
-    }
-
-    @Override
     public Task getTaskById(int id) throws TaskNotFoundException {
         if (!tasks.containsKey(id)) {
             throw new TaskNotFoundException(id);

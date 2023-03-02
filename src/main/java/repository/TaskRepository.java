@@ -9,8 +9,6 @@ public interface TaskRepository {
 
     void saveTask(Task task);
 
-    void addSubTaskInEpic(int epicId, SubTask subTask);
-
     Task getTaskById(int id);
 
     List<Task> getAllTasks();
