@@ -30,23 +30,11 @@ public class Epic extends Task {
     }
 
     private boolean areAllSubTaskNew() {
-        for (SubTask subTask : subTasks.values()) {
-            if (subTask.getStatus() != Status.NEW) {
-                return false;
-            }
-        }
-
-        return true;
+        return subTasks.values().stream().allMatch(s -> s.getStatus() == Status.NEW);
     }
 
     private boolean areAllSubTasksCompleted() {
-        for (SubTask subTask : subTasks.values()) {
-            if (subTask.getStatus() != Status.DONE) {
-                return false;
-            }
-        }
-
-        return true;
+        return subTasks.values().stream().allMatch(s -> s.getStatus() == Status.DONE);
     }
 
     public List<SubTask> getSubTasks() {
