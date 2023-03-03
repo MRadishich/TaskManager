@@ -93,9 +93,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         taskByField[4],
                         Status.valueOf(taskByField[3])
                 );
+            default:
+                throw new IllegalStateException("Статус \"" + taskByField[1] + "\" не найден");
         }
-
-        return null;
     }
 
     @Override
@@ -109,7 +109,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void removeAllTasks() {
         super.removeAllTasks();
         try {
-            new FileWriter(file).close();
+            new FileWriter(file, false).close();
         } catch (IOException e) {
             throw new ManagerDeleteException("Ошибка при удалении задач из файла: " + file.getName());
         }
@@ -131,6 +131,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager manager = Managers.getFileBackedTasksManager(file);
+        int maxId = 0;
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
@@ -138,6 +139,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             while (!(line = br.readLine()).isBlank()) {
                 Task task = manager.taskFromString(line);
                 manager.getTaskRepository().saveTask(task);
+                maxId = Math.max(maxId, task.getId());
+
             }
 
             if ((line = br.readLine()) != null) {
@@ -146,8 +149,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                                 .add(manager.getTaskById(i))
                 );
             }
+            manager.getTaskIdGeneration().setNextFreeId(++maxId);
         } catch (IOException e) {
-            throw new ManagerLoadException("Ошибка при создании задачи из файла: " + file.getName());
+            throw new ManagerLoadException("Ошибка чтения файла: " + file.getName());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            throw new RuntimeException(e.getMessage());
         }
 
         return manager;

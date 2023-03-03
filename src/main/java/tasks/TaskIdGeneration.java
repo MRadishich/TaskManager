@@ -10,4 +10,8 @@ public class TaskIdGeneration {
     public int getNextFreeId() {
         return nextFreeId++;
     }
+
+    public void setNextFreeId(int nextFreeId) {
+        this.nextFreeId = nextFreeId;
+    }
 }
