@@ -75,8 +75,6 @@ public class InMemoryTaskManager implements TaskManager {
 
             taskRepository.saveTask(subTask);
 
-            epic.addSubTask(subTask.getId(), subTask);
-
             return subTask;
 
         } catch (TaskNotFoundException | ClassCastException e) {

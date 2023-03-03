@@ -22,6 +22,11 @@ public class InMemoryTaskRepository implements TaskRepository {
     @Override
     public void saveTask(Task task) {
         tasks.put(task.getId(), task);
+
+        if (task instanceof SubTask) {
+            Epic epic = (Epic) getTaskById(((SubTask) task).getEpicId());
+            epic.addSubTask(task.getId(), (SubTask) task);
+        }
     }
 
     @Override
