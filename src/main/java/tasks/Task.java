@@ -67,7 +67,6 @@ public class Task {
     public String toString() {
         return "SingleTask{" +
                 "Id='" + getId() + '\'' +
-                ", Type='" + getType() + '\'' +
                 ", Name='" + getName() + '\'' +
                 ", DescriptionLength='" + getDescription().length() + '\'' +
                 ", Status='" + getStatus() + '\'' +
