@@ -60,7 +60,7 @@ public class Epic extends Task {
                 ", Name='" + getName() + '\'' +
                 ", DescriptionLength='" + getDescription().length() + '\'' +
                 ", Status='" + getStatus() +
-                '}';
+                "'}";
     }
 
     @Override
