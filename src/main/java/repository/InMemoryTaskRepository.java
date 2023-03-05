@@ -145,8 +145,10 @@ public class InMemoryTaskRepository implements TaskRepository {
                     subTask.getId(),
                     subTask.getName(),
                     subTask.getDescription(),
-                    subTask.getStatus())
-            );
+                    subTask.getStatus(),
+                    subTask.getDuration(),
+                    subTask.getStartTime()
+            ));
         }
 
         epic.removeAllSubTask();

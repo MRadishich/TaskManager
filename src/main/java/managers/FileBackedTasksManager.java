@@ -1,10 +1,19 @@
 package main.java.managers;
 
-import main.java.exceptions.*;
+import main.java.dto.TaskDTO;
+import main.java.exceptions.ManagerDeleteException;
+import main.java.exceptions.ManagerLoadException;
+import main.java.exceptions.ManagerSaveException;
+import main.java.exceptions.TaskNotFoundException;
 import main.java.repository.TaskRepository;
-import main.java.tasks.*;
+import main.java.tasks.Status;
+import main.java.tasks.Task;
+import main.java.tasks.TaskIdGeneration;
+import main.java.tasks.Type;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,35 +27,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public FileBackedTasksManager(TaskIdGeneration taskIdGeneration, TaskRepository taskRepository, HistoryManager historyManager, File file) {
         super(taskIdGeneration, taskRepository, historyManager);
         this.file = file;
-    }
-
-    @Override
-    public SubTask createNewSubTask(String name, String description, int epicId) throws EpicNotFoundException {
-        SubTask subTask = super.createNewSubTask(name, description, epicId);
-        save();
-        return subTask;
-    }
-
-    @Override
-    public Epic createNewEpic(String name, String description) {
-        Epic epic = new Epic(
-                getTaskIdGeneration().getNextFreeId(),
-                name,
-                description
-        );
-
-        getTaskRepository().saveTask(epic);
-
-        save();
-
-        return epic;
-    }
-
-    @Override
-    public Task createNewSingleTask(String name, String description) {
-        Task task = super.createNewSingleTask(name, description);
-        save();
-        return task;
     }
 
     private void save() {
@@ -72,30 +52,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private Task taskFromString(String line) throws IllegalArgumentException {
         String[] taskByField = line.split(FIELD_SEPARATOR);
-        switch (Type.valueOf(taskByField[1])) {
-            case SUB:
-                return new SubTask(
-                        Integer.parseInt(taskByField[0]),
-                        taskByField[2], taskByField[4],
-                        Status.valueOf(taskByField[3]),
-                        Integer.parseInt(taskByField[5])
-                );
-            case EPIC:
-                return new Epic(
-                        Integer.parseInt(taskByField[0]),
-                        taskByField[2],
-                        taskByField[4]
-                );
-            case SINGLE:
-                return new Task(
-                        Integer.parseInt(taskByField[0]),
-                        taskByField[2],
-                        taskByField[4],
-                        Status.valueOf(taskByField[3])
-                );
-            default:
-                throw new IllegalStateException("Статус \"" + taskByField[1] + "\" не найден");
-        }
+        TaskDTO taskDTO = new TaskDTO(
+                Integer.parseInt(taskByField[0]),
+                Type.valueOf(taskByField[1]),
+                taskByField[2],
+                taskByField[3],
+                Status.valueOf(taskByField[4]),
+                Duration.ofMinutes(Long.parseLong(taskByField[5])),
+                LocalDateTime.parse(taskByField[6]),
+                taskByField.length == 8 ? Integer.parseInt(taskByField[7]) : null
+        );
+        return createTask(taskDTO);
     }
 
     @Override

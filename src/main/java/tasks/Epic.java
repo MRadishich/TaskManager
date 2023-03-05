@@ -1,5 +1,7 @@
 package main.java.tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,8 +10,8 @@ import java.util.Objects;
 public class Epic extends Task {
     private final HashMap<Integer, SubTask> subTasks;
 
-    public Epic(int id, String name, String description) {
-        super(id, name, description, Status.NEW);
+    public Epic(int id, String name, String description, Duration duration, LocalDateTime startTime) {
+        super(id, name, description, Status.NEW, duration, startTime);
         subTasks = new HashMap<>();
     }
 
@@ -69,7 +71,7 @@ public class Epic extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return Objects.equals(subTasks, epic.subTasks);
+        return subTasks.equals(epic.subTasks);
     }
 
     @Override

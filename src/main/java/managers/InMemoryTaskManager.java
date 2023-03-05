@@ -1,9 +1,13 @@
 package main.java.managers;
 
+import main.java.dto.TaskDTO;
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
 import main.java.repository.TaskRepository;
-import main.java.tasks.*;
+import main.java.tasks.Epic;
+import main.java.tasks.SubTask;
+import main.java.tasks.Task;
+import main.java.tasks.TaskIdGeneration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,50 +39,44 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task createNewSingleTask(String name, String description) {
-        Task task = new Task(
-                taskIdGeneration.getNextFreeId(),
-                name,
-                description
-        );
+    public Task createTask(TaskDTO taskDTO) {
+        switch (taskDTO.getType()) {
+            case SINGLE:
+                Task task = new Task(
+                        taskDTO.getId() == null ? taskIdGeneration.getNextFreeId() : taskDTO.getId(),
+                        taskDTO.getName(),
+                        taskDTO.getDescription(),
+                        taskDTO.getStatus(),
+                        taskDTO.getDuration(),
+                        taskDTO.getStartTime()
+                );
+                taskRepository.saveTask(task);
+            case EPIC:
+                Epic epic = new Epic(
+                        taskDTO.getId() == null ? taskIdGeneration.getNextFreeId() : taskDTO.getId(),
+                        taskDTO.getName(),
+                        taskDTO.getDescription(),
+                        taskDTO.getDuration(),
+                        taskDTO.getStartTime()
+                );
 
-        taskRepository.saveTask(task);
+                taskRepository.saveTask(epic);
+                return epic;
+            case SUB:
+                SubTask subTask = new SubTask(
+                        taskDTO.getId() == null ? taskIdGeneration.getNextFreeId() : taskDTO.getId(),
+                        taskDTO.getName(),
+                        taskDTO.getDescription(),
+                        taskDTO.getStatus(),
+                        taskDTO.getDuration(),
+                        taskDTO.getStartTime(),
+                        taskDTO.getEpicId()
+                );
 
-        return task;
-    }
-
-    @Override
-    public Epic createNewEpic(String name, String description) {
-        Epic epic = new Epic(
-                taskIdGeneration.getNextFreeId(),
-                name,
-                description
-        );
-
-        taskRepository.saveTask(epic);
-
-        return epic;
-    }
-
-    @Override
-    public SubTask createNewSubTask(String name, String description, int epicId) throws EpicNotFoundException {
-        try {
-            Epic epic = (Epic) taskRepository.getTaskById(epicId);
-
-            SubTask subTask = new SubTask(
-                    taskIdGeneration.getNextFreeId(),
-                    name,
-                    description,
-                    Status.NEW,
-                    epicId
-            );
-
-            taskRepository.saveTask(subTask);
-
-            return subTask;
-
-        } catch (TaskNotFoundException | ClassCastException e) {
-            throw new EpicNotFoundException(epicId);
+                taskRepository.saveTask(subTask);
+                return subTask;
+            default:
+                throw new IllegalArgumentException("Неизвестный тип задачи: '" + taskDTO.getType() + "'");
         }
     }
 

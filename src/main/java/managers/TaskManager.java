@@ -1,20 +1,15 @@
 package main.java.managers;
 
+import main.java.dto.TaskDTO;
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
-import main.java.tasks.Epic;
 import main.java.tasks.SubTask;
 import main.java.tasks.Task;
 
 import java.util.List;
 
 public interface TaskManager {
-
-    Task createNewSingleTask(String name, String description);
-
-    Epic createNewEpic(String name, String description);
-
-    SubTask createNewSubTask(String name, String description, int epicId) throws EpicNotFoundException;
+    Task createTask(TaskDTO taskDTO);
 
     Task updateTask(Task task) throws TaskNotFoundException;
 
