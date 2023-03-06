@@ -50,7 +50,9 @@ public class InMemoryTaskManager implements TaskManager {
                         taskDTO.getDuration(),
                         taskDTO.getStartTime()
                 );
+
                 taskRepository.saveTask(task);
+                return task;
             case EPIC:
                 Epic epic = new Epic(
                         taskDTO.getId() == null ? taskIdGeneration.getNextFreeId() : taskDTO.getId(),

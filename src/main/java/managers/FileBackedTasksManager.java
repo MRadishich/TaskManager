@@ -6,14 +6,12 @@ import main.java.exceptions.ManagerLoadException;
 import main.java.exceptions.ManagerSaveException;
 import main.java.exceptions.TaskNotFoundException;
 import main.java.repository.TaskRepository;
-import main.java.tasks.Status;
+import main.java.tasks.Epic;
+import main.java.tasks.SubTask;
 import main.java.tasks.Task;
 import main.java.tasks.TaskIdGeneration;
-import main.java.tasks.Type;
 
 import java.io.*;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,18 +49,54 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private Task taskFromString(String line) throws IllegalArgumentException {
-        String[] taskByField = line.split(FIELD_SEPARATOR);
-        TaskDTO taskDTO = new TaskDTO(
-                Integer.parseInt(taskByField[0]),
-                Type.valueOf(taskByField[1]),
-                taskByField[2],
-                taskByField[3],
-                Status.valueOf(taskByField[4]),
-                Duration.ofMinutes(Long.parseLong(taskByField[5])),
-                LocalDateTime.parse(taskByField[6]),
-                taskByField.length == 8 ? Integer.parseInt(taskByField[7]) : null
-        );
-        return createTask(taskDTO);
+        return createTask(TaskDTO.getTaskDTO(line, FIELD_SEPARATOR));
+    }
+
+    @Override
+    public Task createTask(TaskDTO taskDTO) {
+        switch (taskDTO.getType()) {
+            case SINGLE:
+                Task task = new Task(
+                        taskDTO.getId() == null ? getTaskIdGeneration().getNextFreeId() : taskDTO.getId(),
+                        taskDTO.getName(),
+                        taskDTO.getDescription(),
+                        taskDTO.getStatus(),
+                        taskDTO.getDuration(),
+                        taskDTO.getStartTime()
+                );
+
+                getTaskRepository().saveTask(task);
+                save();
+                return task;
+            case EPIC:
+                Epic epic = new Epic(
+                        taskDTO.getId() == null ? getTaskIdGeneration().getNextFreeId() : taskDTO.getId(),
+                        taskDTO.getName(),
+                        taskDTO.getDescription(),
+                        taskDTO.getDuration(),
+                        taskDTO.getStartTime()
+                );
+
+                getTaskRepository().saveTask(epic);
+                save();
+                return epic;
+            case SUB:
+                SubTask subTask = new SubTask(
+                        taskDTO.getId() == null ? getTaskIdGeneration().getNextFreeId() : taskDTO.getId(),
+                        taskDTO.getName(),
+                        taskDTO.getDescription(),
+                        taskDTO.getStatus(),
+                        taskDTO.getDuration(),
+                        taskDTO.getStartTime(),
+                        taskDTO.getEpicId()
+                );
+
+                getTaskRepository().saveTask(subTask);
+                save();
+                return subTask;
+            default:
+                throw new IllegalArgumentException("Неизвестный тип задачи: '" + taskDTO.getType() + "'");
+        }
     }
 
     @Override

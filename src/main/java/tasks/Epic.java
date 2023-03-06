@@ -60,8 +60,9 @@ public class Epic extends Task {
         return "Epic{" +
                 "Id='" + getId() + '\'' +
                 ", Name='" + getName() + '\'' +
-                ", DescriptionLength='" + getDescription().length() + '\'' +
+                ", DescriptionLength='" + getDescription() + '\'' +
                 ", Status='" + getStatus() +
+                ", NumberOfSubTasks:'" + getSubTasks().size() +
                 "'}";
     }
 

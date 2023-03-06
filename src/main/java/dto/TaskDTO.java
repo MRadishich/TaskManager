@@ -1,6 +1,8 @@
 package main.java.dto;
 
 import main.java.tasks.Status;
+import main.java.tasks.SubTask;
+import main.java.tasks.Task;
 import main.java.tasks.Type;
 
 import java.time.Duration;
@@ -17,7 +19,7 @@ public class TaskDTO {
     private final Duration duration;
     private final LocalDateTime startTime;
 
-    public TaskDTO(
+    private TaskDTO(
             Integer id,
             Type type,
             String name,
@@ -64,8 +66,68 @@ public class TaskDTO {
     public LocalDateTime getStartTime() {
         return startTime;
     }
+
     public int getEpicId() {
         return epicId;
+    }
+
+    public static TaskDTO getTaskDTO(String line, String separator) {
+        String[] data = line.split(separator);
+
+        return new TaskDTO(
+                "null".equals(data[0]) ? null : Integer.parseInt(data[0]),
+                Type.valueOfOrTrow(data[1]),
+                data[2],
+                data[3],
+                "null".equals(data[4]) ? Status.NEW : Status.valueOfOrTrow(data[4]),
+                Duration.ofMinutes(Integer.parseInt(data[5])),
+                LocalDateTime.parse(data[6]),
+                data.length == 8 ? Integer.parseInt(data[7]) : null
+        );
+    }
+
+    public static TaskDTO toTaskDTO(Task task) {
+        switch (task.getType()) {
+            case SINGLE:
+            case EPIC:
+                return new TaskDTO(
+                        task.getId(),
+                        task.getType(),
+                        task.getName(),
+                        task.getDescription(),
+                        task.getStatus(),
+                        task.getDuration(),
+                        task.getStartTime(),
+                        null
+                );
+            case SUB:
+                return new TaskDTO(
+                        task.getId(),
+                        task.getType(),
+                        task.getName(),
+                        task.getDescription(),
+                        task.getStatus(),
+                        task.getDuration(),
+                        task.getStartTime(),
+                        ((SubTask) task).getEpicId()
+                );
+            default:
+                throw new IllegalArgumentException("Неизвестный тип задачи: '" + task.getType() + "'");
+        }
+    }
+
+    public String asString() {
+        return String.format(
+                "%s,%s,%s,%s,%s,%s,%s,%s",
+                id,
+                type,
+                name,
+                description,
+                status,
+                duration.toMinutes(),
+                startTime,
+                epicId
+        );
     }
 
     @Override

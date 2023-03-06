@@ -59,7 +59,7 @@ public class Task {
                 getName() + "," +
                 getDescription() + "," +
                 getStatus() + "," +
-                getDuration() + "," +
+                getDuration().toMinutes() + "," +
                 getStartTime();
     }
 
