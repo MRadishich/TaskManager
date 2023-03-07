@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final File file;
-    private static final String HEADER = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,epic,status,duration,startTime,epicId";
     private static final String FIELD_SEPARATOR = ",";
 
     public FileBackedTasksManager(TaskIdGeneration taskIdGeneration, TaskRepository taskRepository, HistoryManager historyManager, File file) {
@@ -32,7 +32,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             bw.write(HEADER + System.lineSeparator());
 
             bw.write(getAllTasks().stream()
-                    .map(Task::taskToString)
+                    .map(TaskDTO::toTaskDTO)
+                    .map(TaskDTO::asString)
                     .collect(Collectors.joining(System.lineSeparator())));
 
             bw.write(System.lineSeparator() + System.lineSeparator() + historyToString());

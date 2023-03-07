@@ -45,10 +45,4 @@ public class SubTask extends Task {
                 ", Status='" + getStatus() + '\'' +
                 '}';
     }
-
-    @Override
-    public String taskToString() {
-        return super.taskToString() + ","
-                + getEpicId();
-    }
 }

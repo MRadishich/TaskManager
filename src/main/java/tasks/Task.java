@@ -53,16 +53,6 @@ public class Task {
         return startTime.plus(duration);
     }
 
-    public String taskToString() {
-        return getId() + "," +
-                getType() + "," +
-                getName() + "," +
-                getDescription() + "," +
-                getStatus() + "," +
-                getDuration().toMinutes() + "," +
-                getStartTime();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

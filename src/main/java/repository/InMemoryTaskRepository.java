@@ -21,6 +21,10 @@ public class InMemoryTaskRepository implements TaskRepository {
 
     @Override
     public void saveTask(Task task) {
+        if (tasks.containsKey(task.getId())) {
+            removeTaskById(task.getId());
+        }
+
         tasks.put(task.getId(), task);
 
         if (task instanceof SubTask) {
@@ -151,6 +155,6 @@ public class InMemoryTaskRepository implements TaskRepository {
             ));
         }
 
-        epic.removeAllSubTask();
+        epic.removeAllSubTasks();
     }
 }

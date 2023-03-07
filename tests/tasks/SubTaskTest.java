@@ -107,13 +107,4 @@ public class SubTaskTest {
 
         assertEquals(expected, subTask.toString());
     }
-
-    @Test
-    public void test12_shouldReturnTaskFieldsSeparatedByComma() {
-        SubTask subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
-
-        String expected = "1,SUB,SubTask #1,Simple SubTask,NEW,PT9H,2023-03-03T10:00,0";
-
-        assertEquals(expected, subTask.taskToString());
-    }
 }

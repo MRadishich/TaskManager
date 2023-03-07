@@ -29,9 +29,9 @@ public class FileBackedTaskManagerTest {
             System.out.println(e.getMessage());
         }
 
-        int expectedNumberOfEpic = 1;
-        int expectedNumberOfSingleTask = 1;
-        int expectedNumberOfSubTask = 1;
+        int expectedNumberOfEpic = 2;
+        int expectedNumberOfSingleTask = 2;
+        int expectedNumberOfSubTask = 2;
 
         assertEquals(expectedNumberOfEpic, manager.getAllEpic().size());
         assertEquals(expectedNumberOfSingleTask, manager.getAllSingleTasks().size());

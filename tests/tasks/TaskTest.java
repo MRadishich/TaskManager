@@ -107,13 +107,4 @@ public class TaskTest {
 
         assertEquals(expected, task.toString());
     }
-
-    @Test
-    public void test12_shouldReturnTaskFieldsSeparatedByComma() {
-        Task task = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
-
-        String expected = "0,SINGLE,Single Task #1,Simple single task,NEW,PT9H,2023-03-03T10:00";
-
-        assertEquals(expected, task.taskToString());
-    }
 }

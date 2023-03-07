@@ -224,18 +224,9 @@ public class EpicTest {
     public void test16_shouldReturnReadableToStringResult() {
         Epic epic = new Epic(0, "Epic #1", "Simple Epic", Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        String expected = "Epic{Id='0', Name='Epic #1', DescriptionLength='11', Status='NEW'}";
+        String expected = "Epic{Id='0', Name='Epic #1', DescriptionLength='11', Status='NEW', NumberOfSubTask: '0'}";
 
         assertEquals(expected, epic.toString());
-    }
-
-    @Test
-    public void test17_shouldReturnTaskFieldsSeparatedByComma() {
-        Epic epic = new Epic(0, "Epic #1", "Simple Epic", Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
-
-        String expected = "0,EPIC,Epic #1,Simple Epic,NEW,PT9H,2023-03-03T10:00";
-
-        assertEquals(expected, epic.taskToString());
     }
 
     @Test
@@ -265,7 +256,7 @@ public class EpicTest {
         epic.addSubTask(subTask1.getId(), subTask1);
         epic.addSubTask(subTask2.getId(), subTask2);
 
-        epic.removeAllSubTask();
+        epic.removeAllSubTasks();
 
         List<SubTask> expected = List.of();
 

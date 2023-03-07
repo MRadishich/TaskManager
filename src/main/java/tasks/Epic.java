@@ -51,19 +51,8 @@ public class Epic extends Task {
         subTasks.remove(id);
     }
 
-    public void removeAllSubTask() {
+    public void removeAllSubTasks() {
         subTasks.clear();
-    }
-
-    @Override
-    public String toString() {
-        return "Epic{" +
-                "Id='" + getId() + '\'' +
-                ", Name='" + getName() + '\'' +
-                ", DescriptionLength='" + getDescription() + '\'' +
-                ", Status='" + getStatus() +
-                ", NumberOfSubTasks:'" + getSubTasks().size() +
-                "'}";
     }
 
     @Override
@@ -78,5 +67,16 @@ public class Epic extends Task {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), subTasks);
+    }
+
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "Id='" + getId() + '\'' +
+                ", Name='" + getName() + '\'' +
+                ", DescriptionLength='" + getDescription().length() + '\'' +
+                ", Status='" + getStatus() + '\'' +
+                ", NumberOfSubTask: '" + getSubTasks().size() + '\'' +
+                '}';
     }
 }
