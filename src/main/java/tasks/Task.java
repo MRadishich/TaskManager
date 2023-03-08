@@ -9,8 +9,9 @@ public class Task {
     private final String name;
     private final String description;
     private final Status status;
-    private final Duration duration;
-    private final LocalDateTime startTime;
+    private Duration duration;
+    private LocalDateTime startTime;
+    private final LocalDateTime endTime;
 
     public Task(int id, String name, String description, Status status, Duration duration, LocalDateTime startTime) {
         this.id = id;
@@ -19,6 +20,7 @@ public class Task {
         this.status = status;
         this.duration = duration;
         this.startTime = startTime;
+        this.endTime = getEndTime();
     }
 
     public int getId() {
@@ -45,11 +47,23 @@ public class Task {
         return duration;
     }
 
+    protected void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
+    protected void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
+
         return startTime.plus(duration);
     }
 
@@ -69,10 +83,13 @@ public class Task {
     @Override
     public String toString() {
         return "SingleTask{" +
-                "Id='" + getId() + '\'' +
-                ", Name='" + getName() + '\'' +
-                ", DescriptionLength='" + getDescription().length() + '\'' +
-                ", Status='" + getStatus() + '\'' +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", descriptionLength='" + description.length() + '\'' +
+                ", status='" + status + '\'' +
+                ", duration='" + duration.toMinutes() + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
                 '}';
     }
 }

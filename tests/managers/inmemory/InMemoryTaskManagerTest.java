@@ -1,4 +1,4 @@
-package managers.filebacked.inmemory;
+package managers.inmemory;
 
 import main.java.dto.TaskDTO;
 import main.java.exceptions.TaskNotFoundException;
@@ -109,7 +109,7 @@ public class InMemoryTaskManagerTest {
         Task task2 = manager.getTaskById(2);
         Task task3 = manager.getTaskById(4);
 
-        assertEquals(3, manager.getHistory().size());
+        assertEquals(3, manager.getHistory().size(), "Количество задач в истории не соответствует количеству просмотренных.");
         assertEquals(task1.getName(), manager.getHistory().get(0).getName(), "Задача в истории не соответствует просмотренной.");
         assertEquals(task2.getName(), manager.getHistory().get(1).getName(), "Задача в истории не соответствует просмотренной.");
         assertEquals(task3.getName(), manager.getHistory().get(2).getName(), "Задача в истории не соответствует просмотренной.");
@@ -180,6 +180,10 @@ public class InMemoryTaskManagerTest {
     public void test11_shouldRemoveTaskById() {
         TaskManager manager = createTaskManagerWithTasks();
 
+        manager.getTaskById(0);
+
+        assertEquals(1, manager.getHistory().size());
+
         manager.removeTaskById(0);
 
         TaskNotFoundException exception = assertThrows(
@@ -187,12 +191,30 @@ public class InMemoryTaskManagerTest {
                 () -> manager.removeTaskById(0)
         );
 
+        assertTrue(manager.getHistory().isEmpty(), "История не пустая.");
         assertEquals("Задача с id 0 не найдена.", exception.getMessage(), "Сообщения об ошибке не совпадают.");
-        assertEquals(Type.SINGLE, manager.getTaskById(4).getType(), "Типы задач не совпадют.");
-        assertEquals(Type.SINGLE, manager.getTaskById(5).getType(), "Типы задач не совпадют.");
-        assertEquals(1, manager.getAllEpic().size(), "Количество эпиков не сопадает");
-        assertEquals(4, manager.getAllSingleTasks().size(), "Количество обычных задач не сопадает");
-        assertTrue(manager.getAllSubTasks().isEmpty(), "Список с подзачами не пустой.");
+        assertEquals(Type.SINGLE, manager.getTaskById(4).getType(), "Типы задач не совпадают.");
+        assertEquals(Type.SINGLE, manager.getTaskById(5).getType(), "Типы задач не совпадают.");
+        assertEquals(1, manager.getAllEpic().size(), "Количество эпиков не совпадает");
+        assertEquals(4, manager.getAllSingleTasks().size(), "Количество обычных задач не совпадает");
+        assertTrue(manager.getAllSubTasks().isEmpty(), "Список с подзадачами не пустой.");
+    }
 
+    @Test
+    public void test12_shouldRemoveAllTasks() {
+        TaskManager manager = createTaskManagerWithTasks();
+
+        assertEquals(6, manager.getAllTasks().size(), "Количество задач не совпадает.");
+
+        manager.getTaskById(0);
+        manager.getTaskById(2);
+        manager.getTaskById(4);
+
+        assertEquals(3, manager.getHistory().size(), "Количество задач в истории не соответствует количеству просмотренных.");
+
+        manager.removeAllTasks();
+
+        assertTrue(manager.getAllTasks().isEmpty(), "Список с задачами не пустой.");
+        assertTrue(manager.getHistory().isEmpty(), "История не пустая.");
     }
 }

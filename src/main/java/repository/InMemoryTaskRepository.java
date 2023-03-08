@@ -10,10 +10,11 @@ import main.java.tasks.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskRepository implements TaskRepository {
-    private final HashMap<Integer, Task> tasks;
+    private final Map<Integer, Task> tasks;
 
     public InMemoryTaskRepository() {
         this.tasks = new HashMap<>();

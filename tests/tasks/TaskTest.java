@@ -1,7 +1,6 @@
 package tasks;
 
 import main.java.tasks.Status;
-
 import main.java.tasks.Task;
 import main.java.tasks.Type;
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +10,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class TaskTest {
     @Test
@@ -103,8 +103,55 @@ public class TaskTest {
     public void test11_shouldReturnReadableToStringResult() {
         Task task = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        String expected = "SingleTask{Id='0', Name='Single Task #1', DescriptionLength='18', Status='NEW'}";
+        String expected = "SingleTask{id='0', " +
+                "name='Single Task #1', " +
+                "descriptionLength='18', " +
+                "status='NEW', " +
+                "duration='540', " +
+                "startTime='2023-03-03T10:00', " +
+                "endTime='2023-03-03T19:00" +
+                "'}";
 
         assertEquals(expected, task.toString());
+    }
+
+    @Test
+    public void test12_shouldReturnTaskDuration() {
+        Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+
+        assertEquals(540, task1.getDuration().toMinutes());
+
+        Task task2 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, null, LocalDateTime.parse("2023-03-03T10:00"));
+
+        assertNull(task2.getDuration());
+    }
+
+    @Test
+    public void test13_shouldReturnStartTime() {
+        Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+
+        assertEquals("2023-03-03T10:00", task1.getStartTime().toString());
+
+        Task task2 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), null);
+
+        assertNull(task2.getStartTime());
+    }
+
+    @Test
+    public void test13_shouldReturnTaskEndTime() {
+        Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+
+        assertEquals("2023-03-03T19:00", task1.getEndTime().toString());
+
+        Task task2 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), null);
+
+        assertNull(task2.getEndTime());
+    }
+
+    @Test
+    public void test14_shouldReturnNullIfDurationIsNotGiven() {
+        Task task = new Task(0, "Single Task #1", "Simple single task", Status.NEW, null, LocalDateTime.parse("2023-03-03T10:00"));
+
+        assertNull(task.getDuration());
     }
 }

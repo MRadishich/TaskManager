@@ -103,7 +103,14 @@ public class SubTaskTest {
     public void test11_shouldReturnReadableToStringResult() {
         SubTask subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
 
-        String expected = "SubTask{Id='1', EpicId='0', Name='SubTask #1', DescriptionLength='14', Status='NEW'}";
+        String expected = "SubTask{id='1', " +
+                "epicId='0', " +
+                "name='SubTask #1', " +
+                "descriptionLength='14', " +
+                "status='NEW', duration='540', " +
+                "startTime='2023-03-03T10:00', " +
+                "endTime='2023-03-03T19:00'" +
+                "}";
 
         assertEquals(expected, subTask.toString());
     }
