@@ -39,12 +39,12 @@ public class InMemoryTaskManagerTest {
                 new InMemoryHistoryTaskManager(taskRepository)
         );
 
-        manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,null,540,2023-03-03T10:00,null", ","));
-        manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #2,Simple Epic,null,540,2023-03-03T10:00,null", ","));
-        manager.createTask(TaskDTO.getTaskDTO("null,SINGLE,SingleTask #1,Simple SingleTask,NEW,540,2023-03-03T10:00,null", ","));
-        manager.createTask(TaskDTO.getTaskDTO("null,SINGLE,SingleTask #2,Simple SingleTask,NEW,540,2023-03-03T10:00,null", ","));
-        manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,SubTask #1 by Epic #1,NEW,540,2023-03-05T10:00,0", ","));
-        manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #2,SubTask #2 by Epic #1,NEW,540,2023-03-05T10:00,0", ","));
+        manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,null,540,2023-04-03T10:00,null", ","));
+        manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #2,Simple Epic,null,540,2023-04-04T10:00,null", ","));
+        manager.createTask(TaskDTO.getTaskDTO("null,SINGLE,SingleTask #1,Simple SingleTask,NEW,540,2023-04-05T10:00,null", ","));
+        manager.createTask(TaskDTO.getTaskDTO("null,SINGLE,SingleTask #2,Simple SingleTask,NEW,540,2023-04-06T10:00,null", ","));
+        manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,SubTask #1 by Epic #1,NEW,540,2023-04-07T10:00,0", ","));
+        manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #2,SubTask #2 by Epic #1,NEW,540,2023-04-08T11:00,0", ","));
 
         return manager;
     }
@@ -53,8 +53,8 @@ public class InMemoryTaskManagerTest {
     public void test1_shouldAddNewTask() {
         TaskManager manager = createTaskManager();
 
-        Task task1 = manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,null,540,2023-03-03T10:00,null", ","));
-        Epic epic = new Epic(0, "Epic #1", "Simple Epic", Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+        Task task1 = manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,null,540,2023-04-03T10:00,null", ","));
+        Epic epic = new Epic(0, "Epic #1", "Simple Epic", Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-04T10:00"));
 
         assertEquals(0, task1.getId(), "Id задач не совпадает.");
         assertEquals(1, manager.getAllTasks().size(), "Количество задач не совпадает.");
@@ -65,8 +65,8 @@ public class InMemoryTaskManagerTest {
     public void test2_shouldReturnTaskById() {
         TaskManager manager = createTaskManager();
 
-        manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,null,540,2023-03-03T10:00,null", ","));
-        Epic epic = new Epic(0, "Epic #1", "Simple Epic", Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+        manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,null,540,2023-04-03T10:00,null", ","));
+        Epic epic = new Epic(0, "Epic #1", "Simple Epic", Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-04T10:00"));
 
         assertEquals(epic, manager.getTaskById(0));
 
@@ -126,15 +126,15 @@ public class InMemoryTaskManagerTest {
 
         Task task1 = manager.updateTask(
                 manager.createTask(
-                        TaskDTO.getTaskDTO("0,EPIC,Updated Epic #1,Simple Epic,NEW,840,2023-03-03T10:00,null", ",")));
+                        TaskDTO.getTaskDTO("0,EPIC,Updated Epic #1,Simple Epic,NEW,840,2023-04-03T10:00,null", ",")));
 
         Task task2 = manager.updateTask(
                 manager.createTask(
-                        TaskDTO.getTaskDTO("2,SINGLE,Updated SingleTask #1,Simple SingleTask,DONE,840,2023-03-03T10:00,null", ",")));
+                        TaskDTO.getTaskDTO("2,SINGLE,Updated SingleTask #1,Simple SingleTask,DONE,840,2023-04-04T10:00,null", ",")));
 
         Task task3 = manager.updateTask(
                 manager.createTask(
-                        TaskDTO.getTaskDTO("4,SUB,Updated SubTask #1,SubTask #1 by Epic #2,IN_PROGRESS,540,2023-03-05T10:00,1", ",")));
+                        TaskDTO.getTaskDTO("4,SUB,Updated SubTask #1,SubTask #1 by Epic #2,IN_PROGRESS,540,2023-04-05T10:00,1", ",")));
 
         assertEquals(task1, manager.getHistory().get(0), "Задачи не совпадают.");
         assertEquals(task2, manager.getHistory().get(1), "Задачи не совпадают.");
@@ -147,7 +147,7 @@ public class InMemoryTaskManagerTest {
 
         Task updatedTask = manager.updateTask(
                 manager.createTask(
-                        TaskDTO.getTaskDTO("4,SUB,Updated SubTask #1,SubTask #1 by Epic #2,IN_PROGRESS,540,2023-03-05T10:00,1", ",")));
+                        TaskDTO.getTaskDTO("4,SUB,Updated SubTask #1,SubTask #1 by Epic #2,IN_PROGRESS,540,2023-04-07T10:00,1", ",")));
 
         assertEquals(1, manager.getAllSubTasksByEpicId(0).size(), "Количество задач не совпадает.");
         assertEquals(1, manager.getAllSubTasksByEpicId(1).size(), "Количество задач не совпадает.");
@@ -159,7 +159,7 @@ public class InMemoryTaskManagerTest {
         TaskManager manager = createTaskManager();
         final IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.createTask(TaskDTO.getTaskDTO("null,FEATURE,Epic #1,Simple Epic,null,540,2023-03-03T10:00", ","))
+                () -> manager.createTask(TaskDTO.getTaskDTO("null,FEATURE,Epic #1,Simple Epic,null,540,2023-04-03T10:00", ","))
         );
 
         assertEquals("Неизвестный тип задачи: FEATURE", exception.getMessage(), "Сообщения об ошибке не совпадают.");
@@ -170,7 +170,7 @@ public class InMemoryTaskManagerTest {
         TaskManager manager = Managers.getDefaultTaskManager();
         final IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,CANCEL,540,2023-03-03T10:00", ","))
+                () -> manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,CANCEL,540,2023-04-03T10:00", ","))
         );
 
         assertEquals("Неизвестный статус: CANCEL", exception.getMessage(), "Сообщения об ошибке не совпадают.");
@@ -216,5 +216,41 @@ public class InMemoryTaskManagerTest {
 
         assertTrue(manager.getAllTasks().isEmpty(), "Список с задачами не пустой.");
         assertTrue(manager.getHistory().isEmpty(), "История не пустая.");
+        assertTrue(manager.getAllTaskByPriority().isEmpty(), "Список задач по приоритету не пустой.");
+
+    }
+
+    @Test
+    public void test13_shouldCheckingTaskForIntersectionTime() {
+        TaskManager manager = createTaskManager();
+
+        TaskDTO epic = TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,null,null,null,null", ",");
+        manager.createTask(epic);
+
+        TaskDTO subTask1 = TaskDTO.getTaskDTO("null,SUB,SubTask #1,Simple SubTask,NEW,540,2023-03-15T09:00,0", ",");
+        manager.createTask(subTask1);
+
+        assertEquals(LocalDateTime.parse("2023-03-15T09:00"), manager.getTaskById(0).getStartTime(), "Время начала не совпадает со временем в подзадаче.");
+        assertEquals(LocalDateTime.parse("2023-03-15T18:00"), manager.getTaskById(0).getEndTime(), "Время окончания не совпадает со временем в подзадаче.");
+        assertEquals(540, manager.getTaskById(0).getDuration().toMinutes(), "Дюрация не совпадает с дюрацией подзадач.");
+
+        TaskDTO subTask2 = TaskDTO.getTaskDTO("null,SUB,SubTask #2,Simple SubTask,NEW,360,2023-03-15T15:00,0", ",");
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> manager.createTask(subTask2)
+        );
+
+        assertEquals("Невозможно создать задачу \"SubTask #2\" т.к. она пересикаестся с другой задачей.", exception.getMessage(), "Ошибки не совпадают.");
+
+        manager.removeTaskById(1);
+
+        manager.createTask(subTask2);
+
+        assertEquals(LocalDateTime.parse("2023-03-15T15:00"), manager.getTaskById(0).getStartTime(), "Время начала не совпадает со временем в подзадаче.");
+        assertEquals(LocalDateTime.parse("2023-03-15T21:00"), manager.getTaskById(0).getEndTime(), "Время окончания не совпадает со временем в подзадаче.");
+        assertEquals(360, manager.getTaskById(0).getDuration().toMinutes(), "Дюрация не совпадает с дюрацией подзадач.");
+        assertEquals(2, manager.getAllTasks().size());
+        assertEquals(1, manager.getAllTaskByPriority().size());
     }
 }

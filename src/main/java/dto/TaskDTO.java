@@ -81,7 +81,7 @@ public class TaskDTO {
                 data[3],
                 "null".equals(data[4]) ? Status.NEW : Status.valueOfOrTrow(data[4]),
                 "null".equals(data[5]) ? Duration.ofMinutes(0) : Duration.ofMinutes(Integer.parseInt(data[5])),
-                LocalDateTime.parse(data[6]),
+                "null".equals(data[6]) ? LocalDateTime.parse("2100-01-01T00:00") : LocalDateTime.parse(data[6]),
                 "null".equals(data[7]) ? null : Integer.parseInt(data[7])
         );
     }

@@ -7,12 +7,25 @@ import main.java.tasks.Task;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class InMemoryHistoryTaskManagerTest {
+    private LocalDateTime startTime = LocalDateTime.of(
+            LocalDate.now().getYear(),
+            LocalDate.now().getMonth(),
+            LocalDateTime.now().getDayOfMonth(),
+            10,
+            0
+    );
+    public LocalDateTime getStartTime() {
+        startTime = startTime.plusDays(1);
+
+        return startTime;
+    }
     @Test
     public void test1_shouldReturnEmptyHistoryList() {
         var manager = new InMemoryHistoryTaskManager(new InMemoryTaskRepository());
@@ -25,10 +38,10 @@ public class InMemoryHistoryTaskManagerTest {
         var taskRepository = new InMemoryTaskRepository();
         var historyManager = new InMemoryHistoryTaskManager(taskRepository);
 
-        Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
-        Task task2 = new Task(1, "Single Task #2", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
-        Task task3 = new Task(2, "Single Task #3", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
-        Task task4 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+        Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), getStartTime());
+        Task task2 = new Task(1, "Single Task #2", "Simple single task", Status.NEW, Duration.ofMinutes(540L), getStartTime());
+        Task task3 = new Task(2, "Single Task #3", "Simple single task", Status.NEW, Duration.ofMinutes(540L), getStartTime());
+        Task task4 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), getStartTime());
 
         taskRepository.saveTask(task1);
         taskRepository.saveTask(task2);
@@ -52,7 +65,7 @@ public class InMemoryHistoryTaskManagerTest {
         var historyManager = new InMemoryHistoryTaskManager(taskRepository);
 
         for (int i = 0; i < 10; i++) {
-            Task task = new Task(i, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+            Task task = new Task(i, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), getStartTime());
             taskRepository.saveTask(task);
             historyManager.add(task);
         }

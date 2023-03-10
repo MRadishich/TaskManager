@@ -1,7 +1,9 @@
 package main.java.tasks;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 
 public class Task {
@@ -18,8 +20,8 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
-        this.duration = duration;
-        this.startTime = startTime;
+        this.duration = duration == null ? Duration.ofMinutes(0) : duration;
+        this.startTime = startTime == null ? LocalDateTime.parse("2100-01-01T00:00") : startTime;
         this.endTime = getEndTime();
     }
 
@@ -60,8 +62,8 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        if (startTime == null || duration == null) {
-            return null;
+        if (startTime.equals(LocalDateTime.parse("2100-01-01T00:00"))) {
+            return startTime;
         }
 
         return startTime.plus(duration);

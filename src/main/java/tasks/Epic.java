@@ -5,12 +5,13 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class Epic extends Task {
-    private final HashMap<Integer, SubTask> subTasks;
+    private final Set<SubTask> subTasks;
     private LocalDateTime endTime;
 
     public Epic(int id, String name, String description, Duration duration, LocalDateTime startTime) {
         super(id, name, description, Status.NEW, duration, startTime);
-        subTasks = new HashMap<>();
+        subTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
+                Comparator.nullsLast(Comparator.naturalOrder())));
     }
 
     @Override
@@ -30,15 +31,15 @@ public class Epic extends Task {
     }
 
     private boolean areAllSubTaskNew() {
-        return subTasks.values().stream().allMatch(s -> s.getStatus() == Status.NEW);
+        return subTasks.stream().allMatch(s -> s.getStatus() == Status.NEW);
     }
 
     private boolean areAllSubTasksCompleted() {
-        return subTasks.values().stream().allMatch(s -> s.getStatus() == Status.DONE);
+        return subTasks.stream().allMatch(s -> s.getStatus() == Status.DONE);
     }
 
     public List<SubTask> getSubTasks() {
-        return new ArrayList<>(subTasks.values());
+        return new ArrayList<>(subTasks);
     }
 
     @Override
@@ -50,16 +51,16 @@ public class Epic extends Task {
         this.endTime = endTime;
     }
 
-    public void addSubTask(int id, SubTask subTask) {
-        subTasks.put(id, subTask);
+    public void addSubTask(SubTask subTask) {
+        subTasks.add(subTask);
         updateDuration(subTask, true);
         updateStartTime(subTask, true);
         updatedEndTime(subTask, true);
     }
 
-    private void updateStartTime(SubTask subTask, boolean isAdd) {
-        if (isAdd) {
-            if (getStartTime() != null) {
+    private void updateStartTime(SubTask subTask, boolean addTask) {
+        if (addTask) {
+            if (!(getStartTime().equals(LocalDateTime.parse("2100-01-01T00:00")))) {
                 setStartTime(
                         getStartTime().isBefore(subTask.getStartTime()) ? getStartTime() : subTask.getStartTime()
                 );
@@ -67,49 +68,47 @@ public class Epic extends Task {
                 setStartTime(subTask.getStartTime());
             }
         } else {
-            Optional<SubTask> task = subTasks.values()
+            Optional<SubTask> task = subTasks
                     .stream()
                     .min(Comparator.comparing(Task::getStartTime));
-
             if (task.isPresent()) {
                 setStartTime(task.get().getStartTime());
             } else {
-                setStartTime(null);
+                setStartTime(LocalDateTime.parse("2100-01-01T00:00"));
             }
         }
     }
 
-    private void updateDuration(SubTask subTask, boolean isAdd) {
-        if (isAdd) {
+    private void updateDuration(SubTask subTask, boolean addTask) {
+        if (addTask) {
             setDuration(getDuration().plus(subTask.getDuration()));
         } else {
             setDuration(getDuration().minus(subTask.getDuration()));
         }
     }
 
-    private void updatedEndTime(SubTask subTask, boolean isAdd) {
-        if (isAdd) {
+    private void updatedEndTime(SubTask subTask, boolean addTask) {
+        if (addTask) {
             if (getEndTime() != null) {
                 setEndTime(getEndTime().isBefore(subTask.getEndTime()) ? subTask.getEndTime() : getEndTime());
             } else {
                 setEndTime(subTask.getEndTime());
             }
         } else {
-            Optional<SubTask> task = subTasks.values()
+            Optional<SubTask> task = subTasks
                     .stream()
-                    .max(Comparator.comparing(Task::getEndTime));
+                    .findFirst();
 
             if (task.isPresent()) {
                 setEndTime(task.get().getEndTime());
             } else {
-                setEndTime(LocalDateTime.MAX);
+                setEndTime(null);
             }
         }
     }
 
-    public void removeSubTask(int id) {
-        SubTask subTask = subTasks.get(id);
-        subTasks.remove(id);
+    public void removeSubTask(SubTask subTask) {
+        subTasks.remove(subTask);
 
         updateDuration(subTask, false);
         updateStartTime(subTask, false);

@@ -23,6 +23,8 @@ public interface TaskManager {
 
     List<Task> getAllSubTasks();
 
+    List<Task> getAllTaskByPriority();
+
     List<SubTask> getAllSubTasksByEpicId(int id) throws EpicNotFoundException;
 
     List<Task> getHistory();

@@ -21,6 +21,8 @@ public interface TaskRepository {
 
     List<SubTask> getAllSubTasksByEpicId(int id);
 
+    List<Task> getAllTaskByPriority();
+
     Task updateTask(Task task);
 
     void removeAllTasks();

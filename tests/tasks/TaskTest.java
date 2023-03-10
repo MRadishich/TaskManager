@@ -9,26 +9,21 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskTest {
     @Test
     public void test1_shouldReturnTaskType() {
         Task task = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        Type expected = Type.SINGLE;
-
-        assertEquals(expected, task.getType());
+        assertEquals(Type.SINGLE, task.getType(), "Тип отличаются.");
     }
 
     @Test
     public void test2_shouldReturnTaskId() {
         Task task = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        int expected = 0;
-
-        assertEquals(expected, task.getId());
+        assertEquals(0, task.getId(), "Id отличаются.");
     }
 
     @Test
@@ -37,7 +32,7 @@ public class TaskTest {
 
         String expected = "Single Task #1";
 
-        assertEquals(expected, task.getName());
+        assertEquals(expected, task.getName(), "Наименование задачи отличается.");
     }
 
     @Test
@@ -46,61 +41,50 @@ public class TaskTest {
 
         String expected = "Simple single task";
 
-        assertEquals(expected, task.getDescription());
+        assertEquals(expected, task.getDescription(), "Описание задачи отличается.");
     }
 
     @Test
     public void test5_shouldReturnTaskStatus() {
         Task task = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        Status expected = Status.NEW;
-
-        assertEquals(expected, task.getStatus());
+        assertEquals(Status.NEW, task.getStatus(), "Статус задачи отличается.");
     }
 
     @Test
-    public void test6_shouldReturnTaskStatusNewIfTaskCreatedWithoutStatus() {
-        Task task = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
-
-        Status expected = Status.NEW;
-
-        assertEquals(expected, task.getStatus());
-    }
-
-    @Test
-    public void test7_shouldReturnEquals() {
+    public void test6_shouldReturnEquals() {
         Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
         Task task2 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        assertEquals(task1, task2);
+        assertEquals(task1, task2, "Задачи не совпадают.");
     }
 
     @Test
-    public void test8_shouldReturnNotEquals() {
+    public void test7_shouldReturnNotEquals() {
         Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
         Task task2 = new Task(0, "Single Task #1", "Simple single task", Status.DONE, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        Assertions.assertNotEquals(task1, task2);
+        assertNotEquals(task1, task2, "Задачи совпадают.");
     }
 
     @Test
-    public void test9_shouldReturnEqualsHashCode() {
+    public void test8_shouldReturnEqualsHashCode() {
         Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
         Task task2 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        assertEquals(task1.hashCode(), task2.hashCode());
+        assertEquals(task1.hashCode(), task2.hashCode(), "HashCode не совпадает.");
     }
 
     @Test
-    public void test10_shouldReturnDifferentHashCode() {
+    public void test9_shouldReturnDifferentHashCode() {
         Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
         Task task2 = new Task(0, "Single Task #1", "Simple single task", Status.DONE, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        Assertions.assertNotEquals(task1.hashCode(), task2.hashCode());
+        assertNotEquals(task1.hashCode(), task2.hashCode(), "HashCode совпадает.");
     }
 
     @Test
-    public void test11_shouldReturnReadableToStringResult() {
+    public void test10_shouldReturnReadableToStringResult() {
         Task task = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
         String expected = "SingleTask{id='0', " +
@@ -112,46 +96,46 @@ public class TaskTest {
                 "endTime='2023-03-03T19:00" +
                 "'}";
 
-        assertEquals(expected, task.toString());
+        assertEquals(expected, task.toString(), "toString() не совпадает.");
     }
 
     @Test
-    public void test12_shouldReturnTaskDuration() {
+    public void test11_shouldReturnTaskDuration() {
         Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
         assertEquals(540, task1.getDuration().toMinutes());
 
         Task task2 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, null, LocalDateTime.parse("2023-03-03T10:00"));
 
-        assertNull(task2.getDuration());
+        assertEquals(0, task2.getDuration().toMinutes(), "Дюрация не совпадает.");
     }
 
     @Test
-    public void test13_shouldReturnStartTime() {
+    public void test12_shouldReturnStartTime() {
         Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        assertEquals("2023-03-03T10:00", task1.getStartTime().toString());
+        assertEquals("2023-03-03T10:00", task1.getStartTime().toString(), "Дата начала задачи не совпадает.");
 
         Task task2 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), null);
 
-        assertNull(task2.getStartTime());
+        assertEquals(LocalDateTime.parse("2100-01-01T00:00"), task2.getStartTime(), "Дата начала задачи не совпадает.");
     }
 
     @Test
     public void test13_shouldReturnTaskEndTime() {
         Task task1 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
 
-        assertEquals("2023-03-03T19:00", task1.getEndTime().toString());
+        assertEquals(LocalDateTime.parse("2023-03-03T19:00"), task1.getEndTime(), "Дата окончания задачи не совпадает.");
 
-        Task task2 = new Task(0, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), null);
+        Task task2 = new Task(1, "Single Task #1", "Simple single task", Status.NEW, null, null);
 
-        assertNull(task2.getEndTime());
+        assertEquals(LocalDateTime.parse("2100-01-01T00:00"), task2.getEndTime(), "Дата окончания задачи не совпадает.");
     }
 
     @Test
-    public void test14_shouldReturnNullIfDurationIsNotGiven() {
+    public void test14_shouldReturnZeroDurationIsNotGiven() {
         Task task = new Task(0, "Single Task #1", "Simple single task", Status.NEW, null, LocalDateTime.parse("2023-03-03T10:00"));
 
-        assertNull(task.getDuration());
+        assertTrue(task.getDuration().isZero(), "Дюрация не равна 0.");
     }
 }

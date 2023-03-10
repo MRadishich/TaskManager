@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SubTaskTest {
 
@@ -17,18 +17,14 @@ public class SubTaskTest {
     public void test1_shouldReturnTaskType() {
         SubTask subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
 
-        Type expectedType = Type.SUB;
-
-        assertEquals(expectedType, subTask.getType());
+        assertEquals(Type.SUB, subTask.getType(), "Тип отличается.");
     }
 
     public
     @Test void test2_shouldReturnTaskId() {
         SubTask subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
 
-        int expected = 1;
-
-        assertEquals(expected, subTask.getId());
+        assertEquals(1, subTask.getId(), "Id отличается.");
     }
 
     @Test
@@ -37,7 +33,7 @@ public class SubTaskTest {
 
         String expected = "SubTask #1";
 
-        assertEquals(expected, subTask.getName());
+        assertEquals(expected, subTask.getName(), "Наименование подзадачи отличается.");
     }
 
     @Test
@@ -46,25 +42,21 @@ public class SubTaskTest {
 
         String expected = "Simple SubTask";
 
-        assertEquals(expected, subTask.getDescription());
+        assertEquals(expected, subTask.getDescription(), "Описание подзадачи отличается.");
     }
 
     @Test
     public void test5_shouldReturnTaskStatus() {
         SubTask subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
 
-        Status expected = Status.NEW;
-
-        assertEquals(expected, subTask.getStatus());
+        assertEquals(Status.NEW, subTask.getStatus(), "Статус подздачи отличается.");
     }
 
     @Test
     public void test6_shouldReturnEpicId() {
         SubTask subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
 
-        int expected = 0;
-
-        assertEquals(expected, subTask.getEpicId());
+        assertEquals(0, subTask.getEpicId(), "Id эпика отличается.");
     }
 
     @Test
@@ -72,7 +64,7 @@ public class SubTaskTest {
         SubTask subTask1 = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
         SubTask subTask2 = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
 
-        Assertions.assertEquals(subTask1, subTask2);
+        assertEquals(subTask1, subTask2, "Подздачи отличаются.");
     }
 
     @Test
@@ -80,7 +72,7 @@ public class SubTaskTest {
         SubTask subTask1 = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
         SubTask subTask2 = new SubTask(1, "SubTask #1", "Simple SubTask", Status.DONE, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
 
-        Assertions.assertNotEquals(subTask1, subTask2);
+        assertNotEquals(subTask1, subTask2, "Подзадачи совпадают.");
     }
 
     @Test
@@ -88,7 +80,7 @@ public class SubTaskTest {
         SubTask subTask1 = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
         SubTask subTask2 = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
 
-        assertEquals(subTask1.hashCode(), subTask2.hashCode());
+        assertEquals(subTask1.hashCode(), subTask2.hashCode(), "HashCode отличаестся.");
     }
 
     @Test
@@ -96,7 +88,7 @@ public class SubTaskTest {
         SubTask subTask1 = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
         SubTask subTask2 = new SubTask(1, "SubTask #1", "Simple SubTask", Status.DONE, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
 
-        Assertions.assertNotEquals(subTask1.hashCode(), subTask2.hashCode());
+        assertNotEquals(subTask1.hashCode(), subTask2.hashCode(), "HashCode совпадает.");
     }
 
     @Test
@@ -112,6 +104,43 @@ public class SubTaskTest {
                 "endTime='2023-03-03T19:00'" +
                 "}";
 
-        assertEquals(expected, subTask.toString());
+        assertEquals(expected, subTask.toString(), "toString() не совпадает.");
+    }
+
+    @Test
+    public void test12_shouldReturnDuration() {
+        SubTask subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
+
+        assertEquals(540, subTask.getDuration().toMinutes(), "Дюрация отличается.");
+
+        subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, null, LocalDateTime.parse("2023-03-03T10:00"), 0);
+
+        assertEquals(0, subTask.getDuration().toMinutes(), "Дюрация отличается.");
+    }
+
+    @Test
+    public void test13_shouldReturnStartTime() {
+        SubTask subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
+
+        assertEquals(LocalDateTime.parse("2023-03-03T10:00"), subTask.getStartTime());
+
+        subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), null, 0);
+
+        assertEquals(LocalDateTime.parse("2100-01-01T00:00"), subTask.getStartTime());
+    }
+
+    @Test
+    public void test14_shouldReturnEndTime() {
+        SubTask subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
+
+        assertEquals(LocalDateTime.parse("2023-03-03T19:00"), subTask.getEndTime());
+
+        subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), null, 0);
+
+        assertEquals(LocalDateTime.parse("2100-01-01T00:00"), subTask.getEndTime());
+
+        subTask = new SubTask(1, "SubTask #1", "Simple SubTask", Status.NEW, null, null, 0);
+
+        assertEquals(LocalDateTime.parse("2100-01-01T00:00"), subTask.getEndTime());
     }
 }

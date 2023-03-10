@@ -1,7 +1,9 @@
 package repository;
 
+import main.java.dto.TaskDTO;
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
+import main.java.managers.TaskManager;
 import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
 import main.java.tasks.*;
@@ -18,20 +20,20 @@ public class InMemoryTaskRepositoryTest {
     public TaskRepository createTaskRepository() {
         var repository = new InMemoryTaskRepository();
 
-        Epic epic1 = new Epic(0, "Epic #1", "Simple Epic", Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
-        Epic epic2 = new Epic(1, "Epic #2", "Simple Epic", Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+        Epic epic1 = new Epic(0, "Epic #1", "Simple Epic", Duration.ofMinutes(0), null);
+        Epic epic2 = new Epic(1, "Epic #2", "Simple Epic", Duration.ofMinutes(0), null);
 
         repository.saveTask(epic1);
         repository.saveTask(epic2);
 
-        SubTask subTask1 = new SubTask(2, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"),0);
-        SubTask subTask2 = new SubTask(3, "SubTask #2", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
+        SubTask subTask1 = new SubTask(2, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-03T10:00"),0);
+        SubTask subTask2 = new SubTask(3, "SubTask #2", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-04T10:00"), 0);
 
         repository.saveTask(subTask1);
         repository.saveTask(subTask2);
 
-        Task singleTask1 = new Task(4, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
-        Task singleTask2 = new Task(5, "Single Task #2", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+        Task singleTask1 = new Task(4, "Single Task #1", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-05T10:00"));
+        Task singleTask2 = new Task(5, "Single Task #2", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-06T10:00"));
 
         repository.saveTask(singleTask1);
         repository.saveTask(singleTask2);
@@ -92,7 +94,7 @@ public class InMemoryTaskRepositoryTest {
 
         assertEquals("Задача с id 6 не найдена.", exception.getMessage());
 
-        SubTask subTask2 = new SubTask(3, "SubTask #2", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
+        SubTask subTask2 = new SubTask(3, "SubTask #2", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-04T10:00"), 0);
 
         assertEquals(subTask2, repository.getTaskById(3));
 
@@ -102,8 +104,8 @@ public class InMemoryTaskRepositoryTest {
     public void test7_shouldReturnAllSubTaskByEpicId() {
         var repository = createTaskRepository();
 
-        SubTask subTask1 = new SubTask(2, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
-        SubTask subTask2 = new SubTask(3, "SubTask #2", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
+        SubTask subTask1 = new SubTask(2, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-03T10:00"), 0);
+        SubTask subTask2 = new SubTask(3, "SubTask #2", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-04T10:00"), 0);
 
         List<Task> expected = List.of(subTask1, subTask2);
 
@@ -121,7 +123,7 @@ public class InMemoryTaskRepositoryTest {
     public void test8_shouldReturnUpdatedTask() {
         var repository = createTaskRepository();
 
-        var singleTask2 = new Task(5, "Updated Single Task #2", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+        var singleTask2 = new Task(5, "Updated Single Task #2", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-03T10:00"));
 
         repository.updateTask(singleTask2);
 
@@ -131,7 +133,7 @@ public class InMemoryTaskRepositoryTest {
 
         assertEquals(expectedNumberOfTask, repository.getAllTasks().size());
 
-        final var newSingleTask = new Task(6, "Updated Single Task #2", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+        final var newSingleTask = new Task(6, "Updated Single Task #2", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-03T10:00"));
 
         final TaskNotFoundException exception = assertThrows(
                 TaskNotFoundException.class,
@@ -145,7 +147,7 @@ public class InMemoryTaskRepositoryTest {
     public void test9_shouldReturnUpdatedEpic() {
         var repository = createTaskRepository();
 
-        var epic1 = new Epic(0, "Updated Epic #1", "Simple Epic", Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"));
+        var epic1 = new Epic(0, "Updated Epic #1", "Simple Epic", Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-03T10:00"));
 
         repository.updateTask(epic1);
 
@@ -160,8 +162,8 @@ public class InMemoryTaskRepositoryTest {
     public void test10_subTaskShouldBeUpdatedInEpicSubTaskList() {
         var repository = createTaskRepository();
 
-        SubTask subTask1 = new SubTask(2, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
-        SubTask subTask2 = new SubTask(3, "SubTask #2", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
+        SubTask subTask1 = new SubTask(2, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-03T10:00"), 0);
+        SubTask subTask2 = new SubTask(3, "SubTask #2", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-03T11:00"), 0);
 
         List<SubTask> expectedListSubTaskFirstEpic = List.of(subTask1, subTask2);
         List<SubTask> expectedListSubTaskSecondEpic = List.of();
@@ -169,8 +171,8 @@ public class InMemoryTaskRepositoryTest {
         assertEquals(expectedListSubTaskFirstEpic, repository.getAllSubTasksByEpicId(0));
         assertEquals(expectedListSubTaskSecondEpic, repository.getAllSubTasksByEpicId(1));
 
-        subTask1 = new SubTask(2, "Updated SubTask #1", "Simple SubTask", Status.DONE, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 0);
-        subTask2 = new SubTask(3, "Updated SubTask #2", "Simple SubTask", Status.DONE, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-03T10:00"), 1);
+        subTask1 = new SubTask(2, "Updated SubTask #1", "Simple SubTask", Status.DONE, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-03T10:00"), 0);
+        subTask2 = new SubTask(3, "Updated SubTask #2", "Simple SubTask", Status.DONE, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-03T11:00"), 1);
 
         repository.updateTask(subTask1);
         repository.updateTask(subTask2);
@@ -238,5 +240,36 @@ public class InMemoryTaskRepositoryTest {
         int expectedSizeListTaskAfterRemove = 2;
 
         assertEquals(expectedSizeListTaskAfterRemove, repository.getAllTasks().size());
+    }
+
+    @Test
+    public void test13_shouldReturnTaskByPriorityWithoutEpic() {
+        var repository = new InMemoryTaskRepository();
+
+        Epic epic1 = new Epic(0, "Epic #1", "Simple Epic", null, null);
+        Epic epic2 = new Epic(1, "Epic #2", "Simple Epic", null, null);
+        SubTask subTask1 = new SubTask(2, "SubTask #1", "Simple SubTask", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-04-03T10:00"),0);
+        Task singleTask1 = new Task(3, "Single Task #1", "Simple single task", Status.NEW, null, null);
+        Task singleTask2 = new Task(4, "Single Task #2", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-28T10:00"));
+        Task singleTask3 = new Task(5, "Single Task #3", "Simple single task", Status.NEW, Duration.ofMinutes(540L), LocalDateTime.parse("2023-03-25T10:00"));
+        Task singleTask4 = new Task(6, "Single Task #4", "Simple single task", Status.NEW, null, null);
+
+        repository.saveTask(epic1);
+        repository.saveTask(epic2);
+        repository.saveTask(subTask1);
+        repository.saveTask(singleTask1);
+        repository.saveTask(singleTask2);
+        repository.saveTask(singleTask3);
+        repository.saveTask(singleTask4);
+
+        List<Task> expectedTaskList = List.of(
+                singleTask3,
+                singleTask2,
+                subTask1,
+                singleTask1,
+                singleTask4
+        );
+
+        assertEquals(expectedTaskList, repository.getAllTaskByPriority());
     }
 }

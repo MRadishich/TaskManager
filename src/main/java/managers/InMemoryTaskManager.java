@@ -115,6 +115,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public List<Task> getAllTaskByPriority() {
+        return taskRepository.getAllTaskByPriority();
+    }
+
+    @Override
     public List<SubTask> getAllSubTasksByEpicId(int id) throws EpicNotFoundException {
         return taskRepository.getAllSubTasksByEpicId(id);
     }
