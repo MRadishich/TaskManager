@@ -18,7 +18,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasksMa
 
     @Test
     public void test1_loadFileBackedTaskManagerWithTaskAndHistory() {
-        TaskManager manager = FileBackedTasksManager.loadFromFile(new File("tests/managers/filebacked/TaskToLoadWithHistory.csv"));
+        TaskManager manager = FileBackedTasksManager.loadFromFile(new File("tests/managers/filebacked/resources/TaskToLoadWithHistory.csv"));
 
         assertEquals(12, manager.getAllTasks().size(), "Количество задач не совпадает.");
         assertEquals(2, manager.getAllEpic().size(), "Количество эпиков не совпадает.");
@@ -79,7 +79,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasksMa
 
     @Test
     public void test2_loadFileBackedTaskManagerWithoutHistory() {
-        TaskManager manager = FileBackedTasksManager.loadFromFile(new File("tests/managers/filebacked/TaskToLoad.csv"));
+        TaskManager manager = FileBackedTasksManager.loadFromFile(new File("tests/managers/filebacked/resources/TaskToLoad.csv"));
 
         assertEquals(12, manager.getAllTasks().size(), "Количество задач не совпадает.");
         assertEquals(2, manager.getAllEpic().size(), "Количество эпиков не совпадает.");
@@ -98,7 +98,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasksMa
 
     @Test
     public void test3_loadFileBackedTaskManagerWithEmptyFile() {
-        TaskManager manager = FileBackedTasksManager.loadFromFile(new File("tests/managers/filebacked/Empty.csv"));
+        TaskManager manager = FileBackedTasksManager.loadFromFile(new File("tests/managers/filebacked/resources/Empty.csv"));
 
         assertTrue(manager.getAllTasks().isEmpty(), "Список задач не пустой.");
 
