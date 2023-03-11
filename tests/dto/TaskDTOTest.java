@@ -14,7 +14,8 @@ public class TaskDTOTest {
     @Test
     public void createTaskDTOFromString() {
         TaskDTO.getTaskDTO("0,EPIC,Epic #1,Simple Epic,NEW,540,2023-03-03T10:00,null", ",");
-
+        TaskDTO.getTaskDTO("0,EPIC,Epic #2,Simple Epic,null,null,null,null", ",");
+        TaskDTO.getTaskDTO("0,SUB,SubTask #1,Simple SubTask,NEW,120,null,0", ",");
     }
 
     @Test

@@ -4,8 +4,6 @@ import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
 import main.java.tasks.TaskIdGeneration;
 
-import java.io.File;
-
 public class Managers {
     private static InMemoryTaskRepository inMemoryTaskRepository;
     private static InMemoryHistoryTaskManager inMemoryHistoryTaskManager;
@@ -40,16 +38,15 @@ public class Managers {
         return inMemoryTaskManager;
     }
 
-    public static FileBackedTasksManager getFileBackedTasksManager(File file) {
+    public static FileBackedTasksManager getFileBackedTasksManager() {
         if (fileBackedTasksManager == null) {
             fileBackedTasksManager = new FileBackedTasksManager(
                     new TaskIdGeneration(),
                     getDefaultTaskRepository(),
-                    getDefaultHistoryManager(),
-                    file
+                    getDefaultHistoryManager()
             );
         }
 
         return fileBackedTasksManager;
     }
- }
+}

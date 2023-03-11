@@ -17,18 +17,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-
-    private final File file;
-    private static final String HEADER = "id,type,name,status,description,epic,status,duration,startTime,epicId";
+    private final File fileToSave;
+    private static final String HEADER = "id,type,name,description,status,duration,startTime,epicId";
     private static final String FIELD_SEPARATOR = ",";
 
-    public FileBackedTasksManager(TaskIdGeneration taskIdGeneration, TaskRepository taskRepository, HistoryManager historyManager, File file) {
+    public FileBackedTasksManager(TaskIdGeneration taskIdGeneration, TaskRepository taskRepository, HistoryManager historyManager) {
         super(taskIdGeneration, taskRepository, historyManager);
-        this.file = file;
+        this.fileToSave = new File("saved.csv");
     }
 
     private void save() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileToSave))) {
             bw.write(HEADER + System.lineSeparator());
 
             bw.write(getAllTasks().stream()
@@ -111,9 +110,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void removeAllTasks() {
         super.removeAllTasks();
         try {
-            new FileWriter(file, false).close();
+            new FileWriter(fileToSave, false).close();
         } catch (IOException e) {
-            throw new ManagerDeleteException("Ошибка при удалении задач из файла: " + file.getName());
+            throw new ManagerDeleteException("Ошибка при удалении задач из файла: " + fileToSave.getName());
         }
     }
 
@@ -131,18 +130,25 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return task;
     }
 
-    public static FileBackedTasksManager loadFromFile(File file) {
-        FileBackedTasksManager manager = Managers.getFileBackedTasksManager(file);
+    public static FileBackedTasksManager loadFromFile(File fileToRead) {
+        FileBackedTasksManager manager = Managers.getFileBackedTasksManager();
+
+        if (fileToRead.length() == 0) {
+            return manager;
+        }
+
         int maxId = 0;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileToRead))) {
             String line = br.readLine();
 
-            while (!(line = br.readLine()).isBlank()) {
+            while ((line = br.readLine()) != null) {
+                if (line.isBlank()) {
+                    break;
+                }
                 Task task = manager.taskFromString(line);
                 manager.getTaskRepository().saveTask(task);
                 maxId = Math.max(maxId, task.getId());
-
             }
 
             if ((line = br.readLine()) != null) {
@@ -151,14 +157,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                                 .add(manager.getTaskById(i))
                 );
             }
+
             manager.getTaskIdGeneration().setNextFreeId(++maxId);
         } catch (IOException e) {
-            throw new ManagerLoadException("Ошибка чтения файла: " + file.getName());
+            throw new ManagerLoadException("Ошибка чтения файла: " + fileToRead.getName());
         } catch (IllegalArgumentException | IllegalStateException e) {
             throw new RuntimeException(e.getMessage());
         }
 
         return manager;
+    }
+
+    public File getSavedData() {
+        return fileToSave;
     }
 
     private List<Integer> historyFromString(String line) throws TaskNotFoundException {

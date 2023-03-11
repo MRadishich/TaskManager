@@ -1,0 +1,15 @@
+id,type,name,description,status,duration,startTime,epicId
+null,EPIC,Epic #1,Make 100 push up,null,null,null
+null,EPIC,Epic #2,Make 500 push up,null,null,null
+null,SUB,SubTask #1,Make 50 push up,DONE,540,2023-04-01T09:00,0
+null,SUB,SubTask #2,Make 50 push up,DONE,540,2023-04-02T09:00,0
+null,SUB,SubTask #1,Make 100 push up,NEW,540,2023-04-03T09:00,1
+null,SUB,SubTask #2,Make 100 push up,NEW,540,2023-04-04T09:00,1
+null,SUB,SubTask #3,Make 100 push up,DONE,540,2023-04-05T09:00,1
+null,SUB,SubTask #4,Make 100 push up,IN_PROGRESS,540,2023-04-06T09:00,1
+null,SUB,SubTask #5,Make 100 push up,IN_PROGRESS,540,2023-04-07T09:00,1
+null,SINGLE,SingleTask #1,Buy a cake,NEW,60,2023-04-08T09:00,
+null,SINGLE,SingleTask #2,Buy a bread,NEW,60,2023-04-08T10:00,
+null,SINGLE,SingleTask #3,Buy a cheese,null,60,2023-04-08T12:00,
+
+0,1,5,6,7

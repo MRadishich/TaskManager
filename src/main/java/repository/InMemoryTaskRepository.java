@@ -1,12 +1,8 @@
 package main.java.repository;
 
-import main.java.tasks.TaskValidation;
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
-import main.java.tasks.Epic;
-import main.java.tasks.SubTask;
-import main.java.tasks.Task;
-import main.java.tasks.Type;
+import main.java.tasks.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,11 +10,11 @@ import java.util.stream.Collectors;
 public class InMemoryTaskRepository implements TaskRepository {
     private final Map<Integer, Task> tasks;
     private final Set<Task> taskByPriority;
-    private final TaskValidation taskValidation;
+    private final TaskValidator taskValidator;
 
     public InMemoryTaskRepository() {
         this.tasks = new HashMap<>();
-        this.taskValidation = new TaskValidation();
+        this.taskValidator = new TaskValidator();
         this.taskByPriority = new TreeSet<>(Comparator.comparing(Task::getStartTime).thenComparing(Task::getId));
     }
 
@@ -28,13 +24,13 @@ public class InMemoryTaskRepository implements TaskRepository {
             removeTaskById(task.getId());
         }
 
-        if (!taskValidation.checkTask(task)) {
-            throw new RuntimeException("Невозможно создать задачу \"" + task.getName() + "\" т.к. она пересикаестся с другой задачей.");
+        if (!taskValidator.checkTask(task)) {
+            throw new RuntimeException("Невозможно создать задачу \"" + task.getName() + "\" т.к. она пересекается с другой задачей.");
         }
 
         tasks.put(task.getId(), task);
 
-        if(!(task instanceof Epic)) {
+        if (!(task instanceof Epic)) {
             taskByPriority.add(task);
         }
 
@@ -109,8 +105,8 @@ public class InMemoryTaskRepository implements TaskRepository {
                 updateListSubTasks((SubTask) tasks.get(taskId), (SubTask) task);
             }
 
-            taskValidation.checkTask(task);
-            if(!(task instanceof Epic)) {
+            taskValidator.checkTask(task);
+            if (!(task instanceof Epic)) {
                 updateTaskByPriority(tasks.get(taskId), task);
             }
             tasks.put(taskId, task);
@@ -149,6 +145,7 @@ public class InMemoryTaskRepository implements TaskRepository {
     public void removeAllTasks() {
         tasks.clear();
         taskByPriority.clear();
+        taskValidator.clear();
     }
 
     @Override
@@ -163,9 +160,9 @@ public class InMemoryTaskRepository implements TaskRepository {
                 changeTypeSubTasks((Epic) task);
             }
             tasks.remove(id);
-            taskValidation.releaseInterval(task);
+            taskValidator.releaseInterval(task);
 
-            if(!(task instanceof Epic)) {
+            if (!(task instanceof Epic)) {
                 taskByPriority.remove(task);
             }
         }

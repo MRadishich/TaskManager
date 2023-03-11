@@ -4,7 +4,8 @@ import main.java.customcollections.CustomLinkedList;
 import main.java.repository.TaskRepository;
 import main.java.tasks.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InMemoryHistoryTaskManager implements HistoryManager {
     private final TaskRepository taskRepository;
