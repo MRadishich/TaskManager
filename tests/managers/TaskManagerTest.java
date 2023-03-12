@@ -139,6 +139,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(task1, manager.getHistory().get(0), "Задачи не совпадают.");
         assertEquals(task2, manager.getHistory().get(1), "Задачи не совпадают.");
         assertEquals(task3, manager.getHistory().get(2), "Задачи не совпадают.");
+        assertEquals(4, manager.getAllTaskByPriority().size());
     }
 
     @Test
@@ -255,7 +256,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void test14_creatingSubTaskWithoutEpicId() {
+    public void test14_shouldThrowExceptionIfTryToCreateSubTaskWithEpicIdIsNull() {
         TaskManager manager = createTaskManager();
 
         manager.createTask(

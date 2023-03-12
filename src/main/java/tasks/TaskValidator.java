@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TaskValidator {
-    private Map<LocalDateTime, Boolean> map;
+    private Map<LocalDateTime, Boolean> timePeriods;
     private final static int DAY_OF_YEAR = 365;
 
     public TaskValidator() {
-        this.map = createMap();
+        this.timePeriods = createMap();
     }
 
     private Map<LocalDateTime, Boolean> createMap() {
@@ -42,7 +42,7 @@ public class TaskValidator {
 
     private boolean checkInterval(LocalDateTime startTime, LocalDateTime endTime) {
         while (startTime.isBefore(endTime)) {
-            if (!map.get(startTime)) {
+            if (!timePeriods.get(startTime)) {
                 return false;
             }
             startTime = startTime.plusMinutes(15);
@@ -52,7 +52,7 @@ public class TaskValidator {
 
     private void setMap(LocalDateTime startTime, LocalDateTime endTime) {
         while (startTime.isBefore(endTime)) {
-            map.put(startTime, !map.get(startTime));
+            timePeriods.put(startTime, !timePeriods.get(startTime));
             startTime = startTime.plusMinutes(15);
         }
     }
@@ -64,6 +64,6 @@ public class TaskValidator {
     }
 
     public void clear() {
-        map = createMap();
+        timePeriods = createMap();
     }
 }

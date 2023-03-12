@@ -67,7 +67,7 @@ public class TaskDTO {
         return startTime;
     }
 
-    public int getEpicId() {
+    public Integer getEpicId() {
         return epicId;
     }
 

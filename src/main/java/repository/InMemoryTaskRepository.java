@@ -30,11 +30,11 @@ public class InMemoryTaskRepository implements TaskRepository {
 
         tasks.put(task.getId(), task);
 
-        if (!(task instanceof Epic)) {
+        if (task.getType() != Type.EPIC) {
             taskByPriority.add(task);
         }
 
-        if (task instanceof SubTask) {
+        if (task.getType() == Type.SUB) {
             Epic epic = (Epic) getTaskById(((SubTask) task).getEpicId());
             epic.addSubTask((SubTask) task);
         }
@@ -80,7 +80,7 @@ public class InMemoryTaskRepository implements TaskRepository {
 
     @Override
     public List<SubTask> getAllSubTasksByEpicId(int id) {
-        if (!(tasks.get(id) instanceof Epic)) {
+        if (tasks.get(id).getType() != Type.EPIC) {
             throw new EpicNotFoundException(id);
         }
 
@@ -101,14 +101,16 @@ public class InMemoryTaskRepository implements TaskRepository {
         if (!tasks.containsKey(taskId)) {
             throw new TaskNotFoundException(taskId);
         } else {
-            if (tasks.get(task.getId()) instanceof SubTask) {
+            if (tasks.get(task.getId()).getType() == Type.SUB) {
                 updateListSubTasks((SubTask) tasks.get(taskId), (SubTask) task);
             }
 
             taskValidator.checkTask(task);
-            if (!(task instanceof Epic)) {
+
+            if (task.getType() != Type.EPIC) {
                 updateTaskByPriority(tasks.get(taskId), task);
             }
+
             tasks.put(taskId, task);
 
             return task;
@@ -154,17 +156,16 @@ public class InMemoryTaskRepository implements TaskRepository {
             throw new TaskNotFoundException(id);
         } else {
             Task task = tasks.get(id);
-            if (task instanceof SubTask) {
+
+            if (task.getType() == Type.SUB) {
                 removeSubTaskInEpic((SubTask) task);
-            } else if (task instanceof Epic) {
+            } else if (task.getType() == Type.EPIC) {
                 changeTypeSubTasks((Epic) task);
             }
+
             tasks.remove(id);
             taskValidator.releaseInterval(task);
-
-            if (!(task instanceof Epic)) {
-                taskByPriority.remove(task);
-            }
+            taskByPriority.remove(task);
         }
     }
 
