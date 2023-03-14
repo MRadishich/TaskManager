@@ -1,7 +1,7 @@
 package managers.filebacked;
 
 import main.java.dto.TaskDTO;
-import main.java.managers.FileBackedTasksManager;
+import main.java.managers.filebacked.FileBackedTasksManager;
 import main.java.managers.TaskManager;
 import main.java.tasks.Status;
 import main.java.tasks.Task;

@@ -1,10 +1,13 @@
-package main.java.managers;
+package main.java.managers.filebacked;
 
 import main.java.dto.TaskDTO;
 import main.java.exceptions.ManagerDeleteException;
 import main.java.exceptions.ManagerLoadException;
 import main.java.exceptions.ManagerSaveException;
 import main.java.exceptions.TaskNotFoundException;
+import main.java.managers.HistoryManager;
+import main.java.managers.Managers;
+import main.java.managers.inmemory.InMemoryTaskManager;
 import main.java.repository.TaskRepository;
 import main.java.tasks.Epic;
 import main.java.tasks.SubTask;
@@ -55,7 +58,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public Task createTask(TaskDTO taskDTO) {
         switch (taskDTO.getType()) {
-            case SINGLE:
+            case SINGLE -> {
                 Task task = new Task(
                         taskDTO.getId() == null ? getTaskIdGeneration().getNextFreeId() : taskDTO.getId(),
                         taskDTO.getName(),
@@ -64,11 +67,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         taskDTO.getDuration(),
                         taskDTO.getStartTime()
                 );
-
                 getTaskRepository().saveTask(task);
                 save();
                 return task;
-            case EPIC:
+            }
+            case EPIC -> {
                 Epic epic = new Epic(
                         taskDTO.getId() == null ? getTaskIdGeneration().getNextFreeId() : taskDTO.getId(),
                         taskDTO.getName(),
@@ -76,11 +79,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         taskDTO.getDuration(),
                         taskDTO.getStartTime()
                 );
-
                 getTaskRepository().saveTask(epic);
                 save();
                 return epic;
-            case SUB:
+            }
+            case SUB -> {
                 SubTask subTask = new SubTask(
                         taskDTO.getId() == null ? getTaskIdGeneration().getNextFreeId() : taskDTO.getId(),
                         taskDTO.getName(),
@@ -90,12 +93,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         taskDTO.getStartTime(),
                         taskDTO.getEpicId()
                 );
-
                 getTaskRepository().saveTask(subTask);
                 save();
                 return subTask;
-            default:
-                throw new IllegalArgumentException("Неизвестный тип задачи: '" + taskDTO.getType() + "'");
+            }
+            default -> throw new IllegalArgumentException("Неизвестный тип задачи: '" + taskDTO.getType() + "'");
         }
     }
 

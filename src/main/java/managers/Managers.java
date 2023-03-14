@@ -1,5 +1,8 @@
 package main.java.managers;
 
+import main.java.managers.filebacked.FileBackedTasksManager;
+import main.java.managers.inmemory.InMemoryHistoryTaskManager;
+import main.java.managers.inmemory.InMemoryTaskManager;
 import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
 import main.java.tasks.TaskIdGeneration;

@@ -1,6 +1,7 @@
-package main.java.managers;
+package main.java.managers.inmemory;
 
 import main.java.customcollections.CustomLinkedList;
+import main.java.managers.HistoryManager;
 import main.java.repository.TaskRepository;
 import main.java.tasks.Task;
 

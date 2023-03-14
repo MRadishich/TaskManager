@@ -2,10 +2,10 @@ package managers;
 
 import main.java.dto.TaskDTO;
 import main.java.exceptions.TaskNotFoundException;
-import main.java.managers.InMemoryHistoryTaskManager;
-import main.java.managers.InMemoryTaskManager;
 import main.java.managers.Managers;
 import main.java.managers.TaskManager;
+import main.java.managers.inmemory.InMemoryHistoryTaskManager;
+import main.java.managers.inmemory.InMemoryTaskManager;
 import main.java.repository.InMemoryTaskRepository;
 import main.java.tasks.Epic;
 import main.java.tasks.Task;

@@ -1,6 +1,6 @@
 package managers.history;
 
-import main.java.managers.InMemoryHistoryTaskManager;
+import main.java.managers.inmemory.InMemoryHistoryTaskManager;
 import main.java.repository.InMemoryTaskRepository;
 import main.java.tasks.Status;
 import main.java.tasks.Task;
