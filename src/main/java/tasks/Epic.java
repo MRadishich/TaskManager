@@ -6,8 +6,6 @@ import java.util.*;
 
 public class Epic extends Task {
     private final Set<SubTask> subTasks;
-    private LocalDateTime endTime;
-
     public Epic(int id, String name, String description, Duration duration, LocalDateTime startTime) {
         super(id, name, description, Status.NEW, duration, startTime);
         subTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
@@ -44,7 +42,7 @@ public class Epic extends Task {
 
     @Override
     public LocalDateTime getEndTime() {
-        return endTime;
+        return this.endTime;
     }
 
     private void setEndTime(LocalDateTime endTime) {

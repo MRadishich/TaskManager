@@ -228,14 +228,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         TaskDTO epic = TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,null,null,null,null", ",");
         manager.createTask(epic);
 
-        TaskDTO subTask1 = TaskDTO.getTaskDTO("null,SUB,SubTask #1,Simple SubTask,NEW,540,2023-03-15T09:00,0", ",");
+        TaskDTO subTask1 = TaskDTO.getTaskDTO("null,SUB,SubTask #1,Simple SubTask,NEW,540,2023-04-15T09:00,0", ",");
         manager.createTask(subTask1);
 
-        assertEquals(LocalDateTime.parse("2023-03-15T09:00"), manager.getTaskById(0).getStartTime(), "Время начала не совпадает со временем в подзадаче.");
-        assertEquals(LocalDateTime.parse("2023-03-15T18:00"), manager.getTaskById(0).getEndTime(), "Время окончания не совпадает со временем в подзадаче.");
+        assertEquals(LocalDateTime.parse("2023-04-15T09:00"), manager.getTaskById(0).getStartTime(), "Время начала не совпадает со временем в подзадаче.");
+        assertEquals(LocalDateTime.parse("2023-04-15T18:00"), manager.getTaskById(0).getEndTime(), "Время окончания не совпадает со временем в подзадаче.");
         assertEquals(540, manager.getTaskById(0).getDuration().toMinutes(), "Дюрация не совпадает с дюрацией подзадач.");
 
-        TaskDTO subTask2 = TaskDTO.getTaskDTO("null,SUB,SubTask #2,Simple SubTask,NEW,360,2023-03-15T15:00,0", ",");
+        TaskDTO subTask2 = TaskDTO.getTaskDTO("null,SUB,SubTask #2,Simple SubTask,NEW,360,2023-04-15T15:00,0", ",");
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
@@ -248,8 +248,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         manager.createTask(subTask2);
 
-        assertEquals(LocalDateTime.parse("2023-03-15T15:00"), manager.getTaskById(0).getStartTime(), "Время начала не совпадает со временем в подзадаче.");
-        assertEquals(LocalDateTime.parse("2023-03-15T21:00"), manager.getTaskById(0).getEndTime(), "Время окончания не совпадает со временем в подзадаче.");
+        assertEquals(LocalDateTime.parse("2023-04-15T15:00"), manager.getTaskById(0).getStartTime(), "Время начала не совпадает со временем в подзадаче.");
+        assertEquals(LocalDateTime.parse("2023-04-15T21:00"), manager.getTaskById(0).getEndTime(), "Время окончания не совпадает со временем в подзадаче.");
         assertEquals(360, manager.getTaskById(0).getDuration().toMinutes(), "Дюрация не совпадает с дюрацией подзадач.");
         assertEquals(2, manager.getAllTasks().size());
         assertEquals(1, manager.getAllTaskByPriority().size());

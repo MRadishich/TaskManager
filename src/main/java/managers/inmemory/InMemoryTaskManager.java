@@ -43,7 +43,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task createTask(TaskDTO taskDTO) {
         switch (taskDTO.getType()) {
-            case SINGLE -> {
+            case SINGLE:
                 Task task = new Task(
                         taskDTO.getId() == null ? taskIdGeneration.getNextFreeId() : taskDTO.getId(),
                         taskDTO.getName(),
@@ -54,8 +54,7 @@ public class InMemoryTaskManager implements TaskManager {
                 );
                 taskRepository.saveTask(task);
                 return task;
-            }
-            case EPIC -> {
+            case EPIC:
                 Epic epic = new Epic(
                         taskDTO.getId() == null ? taskIdGeneration.getNextFreeId() : taskDTO.getId(),
                         taskDTO.getName(),
@@ -65,8 +64,7 @@ public class InMemoryTaskManager implements TaskManager {
                 );
                 taskRepository.saveTask(epic);
                 return epic;
-            }
-            case SUB -> {
+            case SUB:
                 SubTask subTask = new SubTask(
                         taskDTO.getId() == null ? taskIdGeneration.getNextFreeId() : taskDTO.getId(),
                         taskDTO.getName(),
@@ -78,8 +76,8 @@ public class InMemoryTaskManager implements TaskManager {
                 );
                 taskRepository.saveTask(subTask);
                 return subTask;
-            }
-            default -> throw new IllegalArgumentException("Неизвестный тип задачи: '" + taskDTO.getType() + "'");
+            default:
+                throw new IllegalArgumentException("Неизвестный тип задачи: '" + taskDTO.getType() + "'");
         }
     }
 

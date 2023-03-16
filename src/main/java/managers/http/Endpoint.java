@@ -11,6 +11,5 @@ public enum Endpoint {
     DELETE_ALL_TASK,
     GET_SUBTASK_BY_EPIC,
     GET_HISTORY,
-    GET_TASKS_BY_PRIORITY,
     UNKNOWN
 }

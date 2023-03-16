@@ -58,7 +58,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public Task createTask(TaskDTO taskDTO) {
         switch (taskDTO.getType()) {
-            case SINGLE -> {
+            case SINGLE:
                 Task task = new Task(
                         taskDTO.getId() == null ? getTaskIdGeneration().getNextFreeId() : taskDTO.getId(),
                         taskDTO.getName(),
@@ -70,8 +70,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 getTaskRepository().saveTask(task);
                 save();
                 return task;
-            }
-            case EPIC -> {
+            case EPIC:
                 Epic epic = new Epic(
                         taskDTO.getId() == null ? getTaskIdGeneration().getNextFreeId() : taskDTO.getId(),
                         taskDTO.getName(),
@@ -82,8 +81,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 getTaskRepository().saveTask(epic);
                 save();
                 return epic;
-            }
-            case SUB -> {
+            case SUB:
                 SubTask subTask = new SubTask(
                         taskDTO.getId() == null ? getTaskIdGeneration().getNextFreeId() : taskDTO.getId(),
                         taskDTO.getName(),
@@ -96,8 +94,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 getTaskRepository().saveTask(subTask);
                 save();
                 return subTask;
-            }
-            default -> throw new IllegalArgumentException("Неизвестный тип задачи: '" + taskDTO.getType() + "'");
+            default:
+                throw new IllegalArgumentException("Неизвестный тип задачи: '" + taskDTO.getType() + "'");
         }
     }
 

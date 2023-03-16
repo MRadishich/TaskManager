@@ -11,7 +11,7 @@ public class Task {
     private final Status status;
     private Duration duration;
     private LocalDateTime startTime;
-    private final LocalDateTime endTime;
+    protected LocalDateTime endTime;
 
     public Task(int id, String name, String description, Status status, Duration duration, LocalDateTime startTime) {
         this.id = id;
@@ -60,13 +60,17 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        if (startTime.equals(LocalDateTime.parse("2100-01-01T00:00"))) {
-            return startTime;
-        }
-
-        return startTime.plus(duration);
+        setEndTime();
+        return endTime;
     }
 
+    private void setEndTime() {
+        if (startTime.equals(LocalDateTime.parse("2100-01-01T00:00"))) {
+            endTime = startTime;
+        } else {
+            endTime = startTime.plus(duration);
+        }
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
