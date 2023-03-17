@@ -159,7 +159,9 @@ public class HttpTaskServer {
             case "GET":
                 if (path.length == 2) {
                     return Endpoint.GET_ALL_TASKS;
-                } else if (path.length == 3) {
+                }
+
+                if (path.length == 3) {
                     switch (path[2]) {
                         case "task":
                             if (exchange.getRequestURI().getQuery() == null) {
@@ -173,7 +175,9 @@ public class HttpTaskServer {
                         case "history":
                             return Endpoint.GET_HISTORY;
                     }
-                } else if (path.length == 4) {
+                }
+
+                if (path.length == 4) {
                     return Endpoint.GET_SUBTASK_BY_EPIC;
                 }
                 break;
