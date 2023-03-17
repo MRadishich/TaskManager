@@ -1,6 +1,9 @@
 package main.java.managers.http;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpExchange;
@@ -32,7 +35,7 @@ public class HttpTaskServer {
 
     public HttpTaskServer() throws IOException {
         manager = FileBackedTasksManager.loadFromFile(new File("saved2.csv"));
-        httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
+        httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         httpServer.createContext("/tasks", this::serverTasks);
         gson = new GsonBuilder()
                 .serializeNulls()
@@ -235,6 +238,7 @@ public class HttpTaskServer {
         public void write(final JsonWriter jsonWriter, final Duration duration) throws IOException {
             jsonWriter.value(duration.toMinutes());
         }
+
         @Override
         public Duration read(final JsonReader jsonReader) throws IOException {
             return Duration.ofMinutes(jsonReader.nextLong());
