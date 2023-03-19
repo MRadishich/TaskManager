@@ -9,70 +9,74 @@ import java.net.http.HttpResponse;
 public class KVTaskClient {
     private final HttpClient client;
     private String apiToken;
-    private final String url;
+    private final String urlKVServer;
 
-    public KVTaskClient(String url) throws IOException, InterruptedException {
+    public KVTaskClient(String url) {
         this.client = HttpClient.newHttpClient();
-        this.url = url;
+        this.urlKVServer = url;
         registration();
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        KVTaskClient kvTaskClient = new KVTaskClient("http://localhost:8080");
-
-        kvTaskClient.put("Alex", "accounted");
-        kvTaskClient.put("Joe", "programmer");
-        System.out.println(kvTaskClient.load("Alex"));
-        System.out.println(kvTaskClient.load("Joe"));
-        kvTaskClient.put("Alex", "dead");
-        System.out.println(kvTaskClient.load("Alex"));
-
+    public String getApiToken() {
+        return apiToken;
     }
 
-    private void registration() throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(url + "/register"))
-                .header("Accept", "application/json")
-                .build();
+    private void registration() {
+        try {
+            final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-        HttpResponse<String> response = client.send(request, handler);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(urlKVServer + "/register"))
+                    .build();
 
-        System.out.println("Код ответа: " + response.statusCode());
-        System.out.println("Тело ответа: " + response.body());
+            HttpResponse<String> response = client.send(request, handler);
 
-        apiToken = response.body();
+            apiToken = response.body();
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Во время выполнения запроса ресурса по URL-адресу: '" + urlKVServer + "', возникла ошибка.\n" +
+                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Введённый вами адрес не соответствует формату URL. Попробуйте, пожалуйста, снова.");
+        }
     }
 
-    public void put(String key, String value) throws IOException, InterruptedException {
+    public void put(String key, String value) {
+        try {
+            HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(value))
-                .uri(URI.create(url + "/save/" + key + "?API_TOKEN=" + apiToken))
-                .header("Accept", "application/json")
-                .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(value))
+                    .uri(URI.create(urlKVServer + "/save/" + key + "?API_TOKEN=" + apiToken))
+                    .build();
 
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-        HttpResponse<String> response = client.send(request, handler);
-
-        System.out.println("Код ответа: " + response.statusCode());
-        System.out.println("Тело ответа: " + response.body());
+            client.send(request, handler);
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Во время выполнения запроса ресурса по URL-адресу: '" + urlKVServer + "', возникла ошибка.\n" +
+                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Введённый вами адрес не соответствует формату URL. Попробуйте, пожалуйста, снова.");
+        }
     }
 
-    public String load(String key) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(url + "/load/" + key + "?API_TOKEN=" + apiToken))
-                .header("Accept", "application/json")
-                .build();
+    public String load(String key) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(urlKVServer + "/load/" + key + "?API_TOKEN=" + apiToken))
+                    .build();
 
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-        HttpResponse<String> response = client.send(request, handler);
+            HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+            HttpResponse<String> response = client.send(request, handler);
 
-        System.out.println("Код ответа: " + response.statusCode());
-        System.out.println("Тело ответа: " + response.body());
+            return response.body();
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Во время выполнения запроса ресурса по URL-адресу: '" + urlKVServer + "', возникла ошибка.\n" +
+                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Введённый вами адрес не соответствует формату URL. Попробуйте, пожалуйста, снова.");
+        }
 
-        return response.toString();
+        return "";
     }
 }

@@ -3,18 +3,15 @@ package main.java.managers.http;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import main.java.dto.TaskDTO;
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
 import main.java.managers.TaskManager;
-import main.java.managers.filebacked.FileBackedTasksManager;
+import main.java.managers.http.adapter.DurationAdapter;
+import main.java.managers.http.adapter.LocalDateTimeAdapter;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,7 +19,6 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,8 +29,8 @@ public class HttpTaskServer {
     private final HttpServer httpServer;
     private final Gson gson;
 
-    public HttpTaskServer() throws IOException {
-        manager = FileBackedTasksManager.loadFromFile(new File("saved2.csv"));
+    public HttpTaskServer(TaskManager manager) throws IOException {
+        this.manager = manager;
         httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         httpServer.createContext("/tasks", this::serverTasks);
         gson = new GsonBuilder()
@@ -45,34 +41,38 @@ public class HttpTaskServer {
                 .create();
     }
 
-    public void run() {
-        System.out.println("Сервер запущен на порту " + PORT);
+    public void start() {
+        System.out.println("\nЗапускаем " + this.getClass().getSimpleName() + " на порту " + PORT);
         httpServer.start();
+    }
+
+    public void stop() {
+        System.out.println("\nОстанавливаем " + this.getClass().getSimpleName() + " на порту " + PORT);
+        httpServer.stop(0);
     }
 
     private void serverTasks(HttpExchange exchange) throws IOException {
 
         Endpoint endpoint = getEndpoint(exchange, exchange.getRequestMethod());
-
         switch (endpoint) {
             case GET_ALL_TASKS:
-                System.out.println("Получен запрос на предоставление всех задач");
+                System.out.println("\nGET_ALL_TASKS");
                 writeResponse(exchange, gson.toJson(manager.getAllTaskByPriority()), 200);
                 break;
             case GET_EPICS:
-                System.out.println("Получен запрос на предоставление всех эпиков");
+                System.out.println("\nGET_EPICS");
                 writeResponse(exchange, gson.toJson(manager.getAllEpic()), 200);
                 break;
             case GET_SUBTASKS:
-                System.out.println("Получен запрос на предоставление всех подзадач");
+                System.out.println("\nGET_SUBTASKS");
                 writeResponse(exchange, gson.toJson(manager.getAllSubTasks()), 200);
                 break;
             case GET_SINGLE_TASKS:
-                System.out.println("Получен запрос на предоставление всех обычных задач");
+                System.out.println("\nGET_SINGLE_TASKS");
                 writeResponse(exchange, gson.toJson(manager.getAllSingleTasks()), 200);
                 break;
             case GET_TASK:
-                System.out.println("Получен запрос на предоставление задачи по id");
+                System.out.println("\nGET_TASK");
                 Optional<Integer> taskIdOpt = getTaskId(exchange);
 
                 if (taskIdOpt.isEmpty()) {
@@ -83,13 +83,13 @@ public class HttpTaskServer {
                 int taskId = taskIdOpt.get();
 
                 try {
-                    writeResponse(exchange, gson.toJson(manager.getTaskById(taskId)), 400);
+                    writeResponse(exchange, gson.toJson(manager.getTaskById(taskId)), 200);
                 } catch (TaskNotFoundException e) {
                     writeResponse(exchange, "Задача с id " + taskId + " не найдена", 404);
                 }
                 break;
             case GET_SUBTASK_BY_EPIC:
-                System.out.println("Получен запрос на предоставление подзадач эпика");
+                System.out.println("\nGET_SUBTASK_BY_EPIC");
                 Optional<Integer> epicIdOpt = getTaskId(exchange);
 
                 if (epicIdOpt.isEmpty()) {
@@ -100,22 +100,22 @@ public class HttpTaskServer {
                 int epicId = epicIdOpt.get();
 
                 try {
-                    writeResponse(exchange, gson.toJson(manager.getAllSubTasksByEpicId(epicId)), 400);
+                    writeResponse(exchange, gson.toJson(manager.getAllSubTasksByEpicId(epicId)), 200);
                 } catch (EpicNotFoundException e) {
                     writeResponse(exchange, "Эпик с id " + epicId + " не найден", 404);
                 }
                 break;
             case GET_HISTORY:
-                System.out.println("Получен запрос на предоставление истории просмотров задач");
+                System.out.println("\nGET_HISTORY");
                 writeResponse(exchange, gson.toJson(manager.getHistory()), 200);
                 break;
             case DELETE_ALL_TASK:
-                System.out.println("Получен запрос на удаление всех задач");
-                manager.getAllTasks();
+                System.out.println("\nDELETE_ALL_TASK");
+                manager.removeAllTasks();
                 writeResponse(exchange, "Все задачи удалены", 200);
                 break;
             case DELETE_TASK:
-                System.out.println("Получен запрос на удаление задачи");
+                System.out.println("\nDELETE_TASK");
                 taskIdOpt = getTaskId(exchange);
 
                 if (taskIdOpt.isEmpty()) {
@@ -133,7 +133,7 @@ public class HttpTaskServer {
                 }
                 break;
             case POST_TASK:
-                System.out.println("Получен запрос на добавление задачи");
+                System.out.println("\nPOST_TASK");
                 InputStream body = exchange.getRequestBody();
                 String str = new String(body.readAllBytes(), StandardCharsets.UTF_8);
 
@@ -141,16 +141,15 @@ public class HttpTaskServer {
                     manager.createTask(gson.fromJson(str, TaskDTO.class));
                     writeResponse(exchange, "Задача успешно создана", 200);
                 } catch (JsonSyntaxException e) {
-                    System.out.println(e.getMessage());
+                    System.out.println("\nПри чтении JSON произошла ошибка: " + e.getMessage());
                     writeResponse(exchange, "Получен некорректный JSON", 400);
                 } catch (RuntimeException e) {
+                    System.out.println("\nПри чтении JSON произошла ошибка: " + e.getMessage());
                     writeResponse(exchange, e.getMessage(), 404);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
                 break;
             case UNKNOWN:
-                System.out.println("Получен неизвестный запрос");
+                System.out.println("\nUNKNOWN");
                 writeResponse(exchange, "Некорректный запрос", 400);
                 break;
         }
@@ -211,6 +210,7 @@ public class HttpTaskServer {
                 os.write(bytes);
             }
         }
+        System.out.println("Код ответа: " + responseCode);
         exchange.close();
     }
 
@@ -230,30 +230,6 @@ public class HttpTaskServer {
             return Optional.empty();
         } catch (NumberFormatException e) {
             return Optional.empty();
-        }
-    }
-
-    static class DurationAdapter extends TypeAdapter<Duration> {
-        @Override
-        public void write(final JsonWriter jsonWriter, final Duration duration) throws IOException {
-            jsonWriter.value(duration.toMinutes());
-        }
-
-        @Override
-        public Duration read(final JsonReader jsonReader) throws IOException {
-            return Duration.ofMinutes(jsonReader.nextLong());
-        }
-    }
-
-    static class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
-        @Override
-        public void write(JsonWriter jsonWriter, LocalDateTime localDateTime) throws IOException {
-            jsonWriter.value(localDateTime.format(DateTimeFormatter.ISO_DATE_TIME));
-        }
-
-        @Override
-        public LocalDateTime read(final JsonReader jsonReader) throws IOException {
-            return LocalDateTime.parse(jsonReader.nextString());
         }
     }
 }

@@ -1,11 +1,13 @@
 package managers.filebacked;
 
 import main.java.dto.TaskDTO;
-import main.java.managers.filebacked.FileBackedTasksManager;
+import main.java.managers.Managers;
 import main.java.managers.TaskManager;
+import main.java.managers.filebacked.FileBackedTasksManager;
 import main.java.tasks.Status;
 import main.java.tasks.Task;
 import managers.TaskManagerTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -15,6 +17,12 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasksManager> {
+
+    @BeforeEach
+    public void clear() {
+        TaskManager manager = Managers.getFileBackedTasksManager();
+        manager.removeAllTasks();
+    }
 
     @Test
     public void test1_loadFileBackedTaskManagerWithTaskAndHistory() {

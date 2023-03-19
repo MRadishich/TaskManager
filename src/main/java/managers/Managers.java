@@ -1,6 +1,7 @@
 package main.java.managers;
 
 import main.java.managers.filebacked.FileBackedTasksManager;
+import main.java.managers.http.HttpTaskManager;
 import main.java.managers.inmemory.InMemoryHistoryTaskManager;
 import main.java.managers.inmemory.InMemoryTaskManager;
 import main.java.repository.InMemoryTaskRepository;
@@ -12,6 +13,7 @@ public class Managers {
     private static InMemoryHistoryTaskManager inMemoryHistoryTaskManager;
     private static InMemoryTaskManager inMemoryTaskManager;
     private static FileBackedTasksManager fileBackedTasksManager;
+    private static HttpTaskManager httpTaskManager;
 
     public static TaskRepository getDefaultTaskRepository() {
         if (inMemoryTaskRepository == null) {
@@ -29,16 +31,17 @@ public class Managers {
         return inMemoryHistoryTaskManager;
     }
 
-    public static TaskManager getDefaultTaskManager() {
-        if (inMemoryTaskManager == null) {
-            inMemoryTaskManager = new InMemoryTaskManager(
+    public static TaskManager getDefaultTaskManager(String url) {
+        if (httpTaskManager == null) {
+            httpTaskManager = new HttpTaskManager(
                     new TaskIdGeneration(),
                     getDefaultTaskRepository(),
-                    getDefaultHistoryManager()
+                    getDefaultHistoryManager(),
+                    url
             );
         }
 
-        return inMemoryTaskManager;
+        return httpTaskManager;
     }
 
     public static FileBackedTasksManager getFileBackedTasksManager() {
@@ -51,5 +54,17 @@ public class Managers {
         }
 
         return fileBackedTasksManager;
+    }
+
+    public static InMemoryTaskManager getInMemoryTaskManager() {
+        if (inMemoryTaskManager == null) {
+            inMemoryTaskManager = new InMemoryTaskManager(
+                    new TaskIdGeneration(),
+                    getDefaultTaskRepository(),
+                    getDefaultHistoryManager()
+            );
+        }
+
+        return inMemoryTaskManager;
     }
 }

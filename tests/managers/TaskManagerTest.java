@@ -168,7 +168,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void test10_addNewTaskWithUnknownStatus() {
-        TaskManager manager = Managers.getDefaultTaskManager();
+        TaskManager manager = Managers.getInMemoryTaskManager();
         final IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Simple Epic,CANCEL,540,2023-04-03T10:00", ","))

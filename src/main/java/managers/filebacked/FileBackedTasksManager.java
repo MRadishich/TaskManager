@@ -29,7 +29,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.fileToSave = new File("saved.csv");
     }
 
-    private void save() {
+    protected void save() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileToSave))) {
             bw.write(HEADER + System.lineSeparator());
 

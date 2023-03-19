@@ -11,7 +11,7 @@ import java.util.Map;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class KVServer {
-    public static final int PORT = 8080;
+    public static final int PORT = 8078;
     private final String apiToken;
     private final HttpServer server;
     private final Map<String, String> data = new HashMap<>();
@@ -89,6 +89,7 @@ public class KVServer {
             System.out.println("\n/register");
             if ("GET".equals(h.getRequestMethod())) {
                 sendText(h, apiToken);
+                System.out.println("Регистрация прошла успешно");
             } else {
                 System.out.println("/register ждёт GET-запрос, а получил " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
@@ -103,6 +104,11 @@ public class KVServer {
         System.out.println("Открой в браузере http://localhost:" + PORT + "/");
         System.out.println("API_TOKEN: " + apiToken);
         server.start();
+    }
+
+    public void stop() {
+        System.out.println("Останавливаем сервер на порту " + PORT);
+        server.stop(0);
     }
 
     private String generateApiToken() {
