@@ -80,7 +80,7 @@ public class InMemoryTaskRepository implements TaskRepository {
 
     @Override
     public List<SubTask> getAllSubTasksByEpicId(int id) {
-        if (tasks.get(id).getType() != Type.EPIC) {
+        if (Optional.ofNullable(tasks.get(id)).stream().allMatch(task -> task.getType() != Type.EPIC)) {
             throw new EpicNotFoundException(id);
         }
 
