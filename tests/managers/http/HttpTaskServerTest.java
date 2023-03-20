@@ -13,10 +13,7 @@ import main.java.managers.inmemory.InMemoryHistoryTaskManager;
 import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
 import main.java.tasks.TaskIdGeneration;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,6 +28,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HttpTaskServerTest {
     private static final String URL_KVSERVER = "http://localhost:8078";
+    private static final KVServer KV_SERVER;
+
+    static {
+        try {
+            KV_SERVER = new KVServer();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private HttpTaskServer server;
     private TaskManager manager;
     private final HttpClient client = HttpClient.newHttpClient();
@@ -42,8 +49,8 @@ public class HttpTaskServerTest {
             .create();
 
     @BeforeAll
-    public static void startKVServer() throws IOException {
-        new KVServer().start();
+    public static void startKVServer() {
+        KV_SERVER.start();
     }
 
     @BeforeEach
@@ -69,6 +76,11 @@ public class HttpTaskServerTest {
         server.stop();
     }
 
+    @AfterAll
+    public static void stopKVServer() {
+        KV_SERVER.stop();
+    }
+
     @Test
     public void test1_addNewTask() throws IOException, InterruptedException {
         TaskDTO task = TaskDTO.getTaskDTO("null,SINGLE,SingleTask #1,Buy a cake,NEW,60,2023-04-08T09:00", ",");
@@ -77,7 +89,7 @@ public class HttpTaskServerTest {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(json))
-                .uri(URI.create("http://localhost:8080/tasks/task/"))
+                .uri(URI.create("http://localhost:8080/tasks/task"))
                 .build();
 
         HttpResponse<String> response = client.send(request, handler);
@@ -88,7 +100,33 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void test2_shouldReturnAllTasksByPriority() throws IOException, InterruptedException {
+    public void test2_shouldReturn400StatusIfJSONInvalid() throws IOException, InterruptedException {
+        String json = "{\n" +
+                "    \"id\": fs,\n" +
+                "    \"type\": \"SINGLE\",\n" +
+                "    \"name\": \"New single task\",\n" +
+                "    \"description\": \"Single task for testing\",\n" +
+                "    \"status\": \"NEW\",\n" +
+                "    \"duration\": 540,\n" +
+                "    \"startTime\": \"2023-05-01T09:00\",\n" +
+                "    \"epicId\": null\n" +
+                "}";
+
+        final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .uri(URI.create("http://localhost:8080/tasks/task"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, handler);
+
+        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals("Некорректный JSON", response.body(), "Тело ответа не совпадает");
+    }
+
+    @Test
+    public void test3_shouldReturnAllTasksByPriority() throws IOException, InterruptedException {
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Make 100 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #2,Make 500 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,Make 50 push up,DONE,540,2023-04-01T09:00,0", ","));
@@ -109,7 +147,7 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void test3_shouldReturnAllSingleTask() throws IOException, InterruptedException {
+    public void test4_shouldReturnAllSingleTask() throws IOException, InterruptedException {
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Make 100 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,Make 50 push up,DONE,540,2023-04-01T09:00,0", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,SINGLE,SingleTask #1,Buy a cake,NEW,60,2023-04-08T09:00,", ","));
@@ -129,7 +167,7 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void test4_shouldReturnAllEpic() throws IOException, InterruptedException {
+    public void test5_shouldReturnAllEpic() throws IOException, InterruptedException {
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Make 100 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #2,Make 500 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,Make 50 push up,DONE,540,2023-04-01T09:00,0", ","));
@@ -150,7 +188,7 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void test5_shouldReturnAllSubTasks() throws IOException, InterruptedException {
+    public void test6_shouldReturnAllSubTasks() throws IOException, InterruptedException {
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Make 100 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #2,Make 500 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,Make 50 push up,DONE,540,2023-04-01T09:00,0", ","));
@@ -171,7 +209,7 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void test6_shouldReturnTasksById() throws IOException, InterruptedException {
+    public void test7_shouldReturnTasksById() throws IOException, InterruptedException {
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Make 100 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #2,Make 500 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,Make 50 push up,DONE,540,2023-04-01T09:00,0", ","));
@@ -192,7 +230,7 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void test7_shouldReturnSubTasksByEpicId() throws IOException, InterruptedException {
+    public void test8_shouldReturnSubTasksByEpicId() throws IOException, InterruptedException {
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Make 100 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #2,Make 500 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,Make 50 push up,DONE,540,2023-04-01T09:00,0", ","));
@@ -213,7 +251,7 @@ public class HttpTaskServerTest {
 
 
     @Test
-    public void test8_shouldDeleteTaskById() throws IOException, InterruptedException {
+    public void test9_shouldDeleteTaskById() throws IOException, InterruptedException {
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Make 100 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #2,Make 500 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,Make 50 push up,DONE,540,2023-04-01T09:00,0", ","));
@@ -239,7 +277,7 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void test9_shouldDeleteAllTasks() throws IOException, InterruptedException {
+    public void test10_shouldDeleteAllTasks() throws IOException, InterruptedException {
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Make 100 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #2,Make 500 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,Make 50 push up,DONE,540,2023-04-01T09:00,0", ","));
@@ -264,7 +302,7 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void test10_shouldReturnHistory() throws IOException, InterruptedException {
+    public void test11_shouldReturnHistory() throws IOException, InterruptedException {
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #1,Make 100 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,EPIC,Epic #2,Make 500 push up,null,null,null", ","));
         manager.createTask(TaskDTO.getTaskDTO("null,SUB,SubTask #1,Make 50 push up,DONE,540,2023-04-01T09:00,0", ","));
@@ -290,7 +328,7 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void test11_shouldReturn400StatusIfURLInvalid() throws IOException, InterruptedException {
+    public void test12_shouldReturn400StatusIfURLInvalid() throws IOException, InterruptedException {
         final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -300,12 +338,12 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(400, response.statusCode(), "Статус ответа отличается");
-        assertEquals("Некорректный запрос", response.body());
+        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals("Некорректный запрос", response.body(), "Тело ответа не совпадает");
     }
 
     @Test
-    public void test12_shouldReturn400StatusIfMethodInvalid() throws IOException, InterruptedException {
+    public void test13_shouldReturn400StatusIfMethodInvalid() throws IOException, InterruptedException {
         final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -315,7 +353,149 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
+        assertEquals(400, response.statusCode(), "Стату ответа не совпадает");
+        assertEquals("Некорректный запрос", response.body(), "Тело ответа не совпадает");
+    }
+
+    @Test
+    public void test14_shouldReturn400StatusIfTaskIdInvalid() throws IOException, InterruptedException {
+        final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("http://localhost:8080/tasks/task?id=v5"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, handler);
+
+        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals("Некорректный идентификатор задачи или неверно указано наименование параметра",
+                response.body(), "Тело ответа не совпадает");
+    }
+
+    @Test
+    public void test15_shouldReturnStatus400IfTaskQueryInvalid() throws IOException, InterruptedException {
+        final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("http://localhost:8080/tasks/task?uid=1"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, handler);
+
         assertEquals(400, response.statusCode());
-        assertEquals("Некорректный запрос", response.body());
+        assertEquals("Некорректный идентификатор задачи или неверно указано наименование параметра",
+                response.body(), "Тело ответа не совпадает");
+    }
+
+    @Test
+    public void test16_shouldReturn404StatusIfTaskNotFound() throws IOException, InterruptedException {
+        final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("http://localhost:8080/tasks/task?id=50"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, handler);
+
+        assertEquals(404, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals("Задача с id 50 не найдена", response.body(), "Тело ответа не совпадает");
+    }
+
+    @Test
+    public void test17_shouldReturn400StatusIfEpicIdInvalid() throws IOException, InterruptedException {
+        final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("http://localhost:8080/tasks/subtask/epic?id=v5"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, handler);
+
+        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals("Некорректный идентификатор эпика " +
+                "или неверно указано наименование параметра", response.body(), "Тело ответа не совпадает");
+    }
+
+    @Test
+    public void test18_shouldReturnStatus400IfEpicQueryInvalid() throws IOException, InterruptedException {
+        final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("http://localhost:8080/tasks/subtask/epic?uid=1"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, handler);
+
+        assertEquals(400, response.statusCode());
+        assertEquals("Некорректный идентификатор эпика или неверно указано наименование параметра",
+                response.body(), "Тело ответа не совпадает");
+    }
+
+    @Test
+    public void test19_shouldReturn404StatusIfEpicNotFound() throws IOException, InterruptedException {
+        final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("http://localhost:8080/tasks/subtask/epic?id=50"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, handler);
+
+        assertEquals(404, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals("Эпик с id 50 не найден", response.body(), "Тело ответа не совпадает");
+    }
+
+    @Test
+    public void test20_shouldReturn400StatusIfTaskQueryInvalidInDeleteRequest() throws IOException, InterruptedException {
+        final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .uri(URI.create("http://localhost:8080/tasks/task?uid=1"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, handler);
+
+        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals("Некорректный идентификатор задачи или неверно указано наименование параметра",
+                response.body(), "Тело ответа не совпадает");
+    }
+
+    @Test
+    public void test21_shouldReturn404StatusIfTaskNotFoundInDeleteRequest() throws IOException, InterruptedException {
+        final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .uri(URI.create("http://localhost:8080/tasks/task?id=50"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, handler);
+
+        assertEquals(404, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals("Задача с id 50 не найдена",
+                response.body(), "Тело ответа не совпадает");
+    }
+
+    @Test
+    public void test22_shouldReturn400StatusIfTaskIdInvalidInDeleteRequest() throws IOException, InterruptedException {
+        final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .uri(URI.create("http://localhost:8080/tasks/task?id=v5"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, handler);
+
+        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals("Некорректный идентификатор задачи или неверно указано наименование параметра",
+                response.body(), "Тело ответа не совпадает");
     }
 }

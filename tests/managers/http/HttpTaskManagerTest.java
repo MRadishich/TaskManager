@@ -8,6 +8,7 @@ import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
 import main.java.tasks.TaskIdGeneration;
 import managers.TaskManagerTest;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,11 +20,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     private static final String URL_KVSERVER = "http://localhost:8078";
+    private static final KVServer KV_SERVER;
+
+    static {
+        try {
+            KV_SERVER = new KVServer();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private String apiToken;
 
     @BeforeAll
-    public static void startKVServer() throws IOException {
-        new KVServer().start();
+    public static void startKVServer() {
+        KV_SERVER.start();
     }
 
     @BeforeEach
@@ -50,8 +61,13 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
         manager.createTask(TaskDTO.getTaskDTO("null,SINGLE,SingleTask #3,Buy a cheese,null,60,2023-04-08T12:00,", ","));
     }
 
+    @AfterAll
+    public static void stopKVServer() {
+        KV_SERVER.stop();
+    }
+
     @Test
-    public void test1_shouldRestorManagerStateFromServer() {
+    public void test1_shouldRestoreManagerStateFromServer() {
         TaskRepository repository = new InMemoryTaskRepository();
         HttpTaskManager manager = new HttpTaskManager(
                 new TaskIdGeneration(),
