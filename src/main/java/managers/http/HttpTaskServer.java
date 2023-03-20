@@ -32,7 +32,7 @@ public class HttpTaskServer {
     public HttpTaskServer(TaskManager manager) throws IOException {
         this.manager = manager;
         httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
-        httpServer.createContext("/tasks", this::serverTasks);
+        httpServer.createContext("/tasks", this::handleTasks);
         gson = new GsonBuilder()
                 .serializeNulls()
                 .setPrettyPrinting()
@@ -51,9 +51,9 @@ public class HttpTaskServer {
         httpServer.stop(0);
     }
 
-    private void serverTasks(HttpExchange exchange) throws IOException {
+    private void handleTasks(HttpExchange exchange) throws IOException {
 
-        Endpoint endpoint = getEndpoint(exchange, exchange.getRequestMethod());
+        Endpoint endpoint = getEndpoint(exchange);
         switch (endpoint) {
             case GET_ALL_TASKS:
                 System.out.println("\nGET_ALL_TASKS");
@@ -76,7 +76,8 @@ public class HttpTaskServer {
                 Optional<Integer> taskIdOpt = getTaskId(exchange);
 
                 if (taskIdOpt.isEmpty()) {
-                    writeResponse(exchange, "Некорректный идентификатор задачи", 404);
+                    writeResponse(exchange, "Некорректный идентификатор задачи " +
+                            "или неверно указано наименование параметра", 400);
                     return;
                 }
 
@@ -93,7 +94,8 @@ public class HttpTaskServer {
                 Optional<Integer> epicIdOpt = getTaskId(exchange);
 
                 if (epicIdOpt.isEmpty()) {
-                    writeResponse(exchange, "Некорректный идентификатор эпика", 404);
+                    writeResponse(exchange, "Некорректный идентификатор эпика " +
+                                    "или неверно указано наименование параметра", 400);
                     return;
                 }
 
@@ -119,7 +121,8 @@ public class HttpTaskServer {
                 taskIdOpt = getTaskId(exchange);
 
                 if (taskIdOpt.isEmpty()) {
-                    writeResponse(exchange, "Некорректный идентификатор эпика", 404);
+                    writeResponse(exchange, "Некорректный идентификатор задачи " +
+                            "или неверно указано наименование параметра", 400);
                     return;
                 }
 
@@ -142,7 +145,7 @@ public class HttpTaskServer {
                     writeResponse(exchange, "Задача успешно создана", 200);
                 } catch (JsonSyntaxException e) {
                     System.out.println("\nПри чтении JSON произошла ошибка: " + e.getMessage());
-                    writeResponse(exchange, "Получен некорректный JSON", 400);
+                    writeResponse(exchange, "Некорректный JSON", 400);
                 } catch (RuntimeException e) {
                     System.out.println("\nПри чтении JSON произошла ошибка: " + e.getMessage());
                     writeResponse(exchange, e.getMessage(), 404);
@@ -155,36 +158,30 @@ public class HttpTaskServer {
         }
     }
 
-    private Endpoint getEndpoint(HttpExchange exchange, String requestMethod) {
-        String[] path = exchange.getRequestURI().getPath().split("/");
-        switch (requestMethod) {
+    private Endpoint getEndpoint(HttpExchange exchange) {
+        String path = exchange.getRequestURI().getPath();
+        switch (exchange.getRequestMethod()) {
             case "GET":
-                if (path.length == 2) {
-                    return Endpoint.GET_ALL_TASKS;
-                }
-
-                if (path.length == 3) {
-                    switch (path[2]) {
-                        case "task":
-                            if (exchange.getRequestURI().getQuery() == null) {
-                                return Endpoint.GET_SINGLE_TASKS;
-                            }
-                            return Endpoint.GET_TASK;
-                        case "epic":
-                            return Endpoint.GET_EPICS;
-                        case "subtask":
-                            return Endpoint.GET_SUBTASKS;
-                        case "history":
-                            return Endpoint.GET_HISTORY;
-                    }
-                }
-
-                if (path.length == 4) {
-                    return Endpoint.GET_SUBTASK_BY_EPIC;
+                switch (path) {
+                    case "/tasks":
+                        return Endpoint.GET_ALL_TASKS;
+                    case "/tasks/task":
+                        if (exchange.getRequestURI().getQuery() == null) {
+                            return Endpoint.GET_SINGLE_TASKS;
+                        }
+                        return Endpoint.GET_TASK;
+                    case "/tasks/epic":
+                        return Endpoint.GET_EPICS;
+                    case "/tasks/subtask":
+                        return Endpoint.GET_SUBTASKS;
+                    case "/tasks/history":
+                        return Endpoint.GET_HISTORY;
+                    case "/tasks/subtask/epic":
+                        return Endpoint.GET_SUBTASK_BY_EPIC;
                 }
                 break;
             case "DELETE":
-                if (path.length == 3 && "task".equals(path[2])) {
+                if ("/tasks/task".equals(path)) {
                     if (exchange.getRequestURI().getQuery() == null) {
                         return Endpoint.DELETE_ALL_TASK;
                     }
@@ -192,7 +189,7 @@ public class HttpTaskServer {
                 }
                 break;
             case "POST":
-                if (path.length == 3 && "task".equals(path[2])) {
+                if ("/tasks/task".equals(path)) {
                     return Endpoint.POST_TASK;
                 }
                 break;
