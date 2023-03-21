@@ -1,14 +1,12 @@
 package managers.http;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import main.java.dto.TaskDTO;
+import main.java.managers.Managers;
 import main.java.managers.TaskManager;
 import main.java.managers.http.HttpTaskManager;
 import main.java.managers.http.HttpTaskServer;
 import main.java.managers.http.KVServer;
-import main.java.managers.http.adapter.DurationAdapter;
-import main.java.managers.http.adapter.LocalDateTimeAdapter;
 import main.java.managers.inmemory.InMemoryHistoryTaskManager;
 import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
@@ -20,8 +18,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,12 +37,7 @@ public class HttpTaskServerTest {
     private HttpTaskServer server;
     private TaskManager manager;
     private final HttpClient client = HttpClient.newHttpClient();
-    private final Gson gson = new GsonBuilder().
-            serializeNulls()
-            .setPrettyPrinting()
-            .registerTypeAdapter(Duration.class, new DurationAdapter())
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-            .create();
+    private final Gson gson = Managers.getGson();
 
     @BeforeAll
     public static void startKVServer() {

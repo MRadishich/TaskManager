@@ -1,12 +1,19 @@
 package main.java.managers;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import main.java.managers.filebacked.FileBackedTasksManager;
 import main.java.managers.http.HttpTaskManager;
+import main.java.managers.http.adapter.DurationAdapter;
+import main.java.managers.http.adapter.LocalDateTimeAdapter;
 import main.java.managers.inmemory.InMemoryHistoryTaskManager;
 import main.java.managers.inmemory.InMemoryTaskManager;
 import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
 import main.java.tasks.TaskIdGeneration;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Managers {
     private static InMemoryTaskRepository inMemoryTaskRepository;
@@ -66,5 +73,14 @@ public class Managers {
         }
 
         return inMemoryTaskManager;
+    }
+
+    public static Gson getGson() {
+        return new GsonBuilder()
+                .serializeNulls()
+                .setPrettyPrinting()
+                .registerTypeAdapter(Duration.class, new DurationAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
     }
 }

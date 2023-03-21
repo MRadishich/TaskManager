@@ -17,10 +17,6 @@ public class KVTaskClient {
         registration();
     }
 
-    public String getApiToken() {
-        return apiToken;
-    }
-
     private void registration() {
         try {
             final HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
