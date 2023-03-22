@@ -14,6 +14,7 @@ import main.java.tasks.TaskIdGeneration;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -85,7 +86,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(200, response.statusCode(), "Статус ответа не совпадает.");
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Статус ответа не совпадает.");
         assertEquals(1, manager.getAllTasks().size(), "Количество задач не совпадает.");
         assertEquals(1, manager.getAllSingleTasks().size(), "Количество обычных задач не совпадает.");
     }
@@ -112,7 +113,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Некорректный JSON", response.body(), "Тело ответа не совпадает");
     }
 
@@ -133,7 +134,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(200, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Статус ответа не совпадает");
         assertEquals(gson.toJson(manager.getAllTaskByPriority()), response.body(), "Тело ответа не совпадает");
     }
 
@@ -153,7 +154,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(200, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Статус ответа не совпадает");
         assertEquals(gson.toJson(manager.getAllSingleTasks()), response.body(), "Тело ответа не совпадает");
     }
 
@@ -174,7 +175,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(200, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Статус ответа не совпадает");
         assertEquals(gson.toJson(manager.getAllEpic()), response.body(), "Тело ответа не совпадает");
     }
 
@@ -195,7 +196,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(200, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Статус ответа не совпадает");
         assertEquals(gson.toJson(manager.getAllSubTasks()), response.body(), "Тело ответа не совпадает");
     }
 
@@ -216,7 +217,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(200, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Статус ответа не совпадает");
         assertEquals(gson.toJson(manager.getTaskById(0)), response.body(), "Тело ответа не совпадает");
     }
 
@@ -236,7 +237,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handlers);
 
-        assertEquals(200, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Статус ответа не совпадает");
         assertEquals(gson.toJson(manager.getAllSubTasksByEpicId(0)), response.body(), "Тело ответа не совпадает");
     }
 
@@ -261,7 +262,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(200, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Задача с id 4 удалена", response.body(), "Тело ответа не совпадает");
         assertEquals(4, manager.getAllTasks().size(), "Количество задач не совпадает");
         assertTrue(manager.getAllSingleTasks().isEmpty(), "Список обычных задач не пустой");
@@ -287,7 +288,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(200, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Все задачи удалены", response.body(), "Тело ответа не совпадает");
         assertTrue(manager.getAllTasks().isEmpty(), "Список задач не пустой");
     }
@@ -314,7 +315,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(200, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Статус ответа не совпадает");
         assertEquals(gson.toJson(manager.getHistory()), response.body(), "Тело ответа не совпадает");
     }
 
@@ -329,7 +330,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Некорректный запрос", response.body(), "Тело ответа не совпадает");
     }
 
@@ -344,7 +345,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(400, response.statusCode(), "Стату ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, response.statusCode(), "Стату ответа не совпадает");
         assertEquals("Некорректный запрос", response.body(), "Тело ответа не совпадает");
     }
 
@@ -359,7 +360,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Некорректный идентификатор задачи или неверно указано наименование параметра",
                 response.body(), "Тело ответа не совпадает");
     }
@@ -375,7 +376,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(400, response.statusCode());
+        assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, response.statusCode());
         assertEquals("Некорректный идентификатор задачи или неверно указано наименование параметра",
                 response.body(), "Тело ответа не совпадает");
     }
@@ -391,7 +392,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(404, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_NOT_FOUND, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Задача с id 50 не найдена", response.body(), "Тело ответа не совпадает");
     }
 
@@ -406,7 +407,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Некорректный идентификатор эпика " +
                 "или неверно указано наименование параметра", response.body(), "Тело ответа не совпадает");
     }
@@ -422,7 +423,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(400, response.statusCode());
+        assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, response.statusCode());
         assertEquals("Некорректный идентификатор эпика или неверно указано наименование параметра",
                 response.body(), "Тело ответа не совпадает");
     }
@@ -438,7 +439,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(404, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_NOT_FOUND, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Эпик с id 50 не найден", response.body(), "Тело ответа не совпадает");
     }
 
@@ -453,7 +454,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Некорректный идентификатор задачи или неверно указано наименование параметра",
                 response.body(), "Тело ответа не совпадает");
     }
@@ -469,7 +470,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(404, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_NOT_FOUND, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Задача с id 50 не найдена",
                 response.body(), "Тело ответа не совпадает");
     }
@@ -485,7 +486,7 @@ public class HttpTaskServerTest {
 
         HttpResponse<String> response = client.send(request, handler);
 
-        assertEquals(400, response.statusCode(), "Статус ответа не совпадает");
+        assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, response.statusCode(), "Статус ответа не совпадает");
         assertEquals("Некорректный идентификатор задачи или неверно указано наименование параметра",
                 response.body(), "Тело ответа не совпадает");
     }
