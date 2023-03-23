@@ -65,6 +65,9 @@ public class InMemoryTaskManager implements TaskManager {
                 taskRepository.saveTask(epic);
                 return epic;
             case SUB:
+                if (taskDTO.getEpicId() == null) {
+                    throw new IllegalArgumentException("Невозможно создать подзадачу " + taskDTO.getName() + ". Отсутствует epicId");
+                }
                 SubTask subTask = new SubTask(
                         taskDTO.getId() == null ? taskIdGeneration.getNextFreeId() : taskDTO.getId(),
                         taskDTO.getName(),

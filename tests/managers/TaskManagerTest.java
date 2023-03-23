@@ -260,14 +260,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void test14_shouldThrowExceptionIfTryToCreateSubTaskWithEpicIdIsNull() {
         TaskManager manager = createTaskManager();
 
-        NullPointerException exception = assertThrows(
-                NullPointerException.class,
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
                 () -> manager.createTask(
                         TaskDTO.getTaskDTO("0,SUB,SubTask #1,Simple SubTask,NEW,120,null,null", ",")
                 )
         );
 
-        assertNull(exception.getMessage());
+        assertEquals("Невозможно создать подзадачу SubTask #1. Отсутствует epicId", exception.getMessage());
     }
 
     @Test
