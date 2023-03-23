@@ -35,8 +35,12 @@ public class InMemoryTaskRepository implements TaskRepository {
         }
 
         if (task.getType() == Type.SUB) {
-            Epic epic = (Epic) getTaskById(((SubTask) task).getEpicId());
-            epic.addSubTask((SubTask) task);
+            try {
+                Epic epic = (Epic) getTaskById(((SubTask) task).getEpicId());
+                epic.addSubTask((SubTask) task);
+            } catch (TaskNotFoundException e) {
+                throw new EpicNotFoundException(((SubTask) task).getEpicId());
+            }
         }
     }
 

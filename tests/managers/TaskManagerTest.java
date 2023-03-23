@@ -1,6 +1,7 @@
 package managers;
 
 import main.java.dto.TaskDTO;
+import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
 import main.java.managers.Managers;
 import main.java.managers.TaskManager;
@@ -259,10 +260,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void test14_shouldThrowExceptionIfTryToCreateSubTaskWithEpicIdIsNull() {
         TaskManager manager = createTaskManager();
 
-        manager.createTask(
-                TaskDTO.getTaskDTO("0,EPIC,Epic #1,Simple Epic,NEW,540,2023-03-03T10:00,null", ",")
-        );
-
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
                 () -> manager.createTask(
@@ -271,5 +268,19 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         );
 
         assertNull(exception.getMessage());
+    }
+
+    @Test
+    public void test15_shouldThrowExceptionIfTryToCreateSubTaskWithUnknownEpicId() {
+        TaskManager manager = createTaskManager();
+
+        EpicNotFoundException exception = assertThrows(
+                EpicNotFoundException.class,
+                () -> manager.createTask(
+                        TaskDTO.getTaskDTO("0,SUB,SubTask #1,Simple SubTask,NEW,120,null,1", ",")
+                )
+        );
+
+        assertEquals("Эпик с id 1 не найден", exception.getMessage());
     }
 }
