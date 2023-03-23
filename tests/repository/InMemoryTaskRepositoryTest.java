@@ -1,9 +1,7 @@
 package repository;
 
-import main.java.dto.TaskDTO;
 import main.java.exceptions.EpicNotFoundException;
 import main.java.exceptions.TaskNotFoundException;
-import main.java.managers.TaskManager;
 import main.java.repository.InMemoryTaskRepository;
 import main.java.repository.TaskRepository;
 import main.java.tasks.*;
@@ -116,7 +114,7 @@ public class InMemoryTaskRepositoryTest {
                 () -> repository.getAllSubTasksByEpicId(2)
         );
 
-        assertEquals("Эпик с id 2 не найден.", exception.getMessage());
+        assertEquals("Эпик с id 2 не найден", exception.getMessage());
     }
 
     @Test
